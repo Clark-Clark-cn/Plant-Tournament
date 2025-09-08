@@ -11,10 +11,10 @@ public:
         pass_time=0;
         shotted=false;
     }
-    void set_wait_time(double time){
+    void setWaitTime(double time){
         wait_time=time;
     }
-    void set_one_shot(bool one_shot){
+    void setOneShot(bool one_shot){
         this->one_shot=one_shot;
     }
     void set_callback(std::function<void()> callback){

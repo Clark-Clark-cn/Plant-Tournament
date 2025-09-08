@@ -57,6 +57,7 @@ public:
         return canRemove;
     }
     virtual void collide(){
+        if(once)isValid=false;
         if (callback) {
             callback();
         }
@@ -83,6 +84,7 @@ protected:
     Vector2 size;
     Vector2 velocity;
     PlayerID collideTarget;
+    bool once=true;
     bool isValid=true;
     bool canRemove=false;
     std::function<void()> callback=nullptr;

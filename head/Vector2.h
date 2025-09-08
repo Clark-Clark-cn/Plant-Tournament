@@ -14,6 +14,13 @@ public:
         return Vector2(x + other.x, y + other.y);
     }
 
+    Vector2 operator/(float scalar) const
+    {
+        if (scalar != 0)
+            return Vector2(x / scalar, y / scalar);
+        return Vector2(0, 0);
+    }
+
     void operator+=(const Vector2& other)
     {
         x += other.x;

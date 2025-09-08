@@ -24,7 +24,7 @@ void putImage(const Camera& camera, int x, int y, IMAGE* img)
 {
     int w = img->getwidth();
     int h = img->getheight();
-    const Vector2& pos_cam = camera.get_position();
+    const Vector2& pos_cam = camera.getPosition();
     AlphaBlend(GetImageHDC(NULL), x + pos_cam.x, y + pos_cam.y, w, h,
                GetImageHDC(img), 0, 0, w, h, {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA});
 }
@@ -38,7 +38,7 @@ void putImage(int x,int y,int w,int h,IMAGE* img,int src_x,int src_y)
 
 void line(const Camera& camera, int x1, int y1, int x2, int y2)
 {
-    const Vector2& pos_cam = camera.get_position();
+    const Vector2& pos_cam = camera.getPosition();
     ::line(x1 + pos_cam.x, y1 + pos_cam.y, x2 + pos_cam.x, y2 + pos_cam.y);
 }
 

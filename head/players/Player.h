@@ -49,30 +49,30 @@ public:
 
 		current_animation = is_facing_right ? &animation_idle_right : &animation_idle_left;
 
-		timer_invulnerable.set_wait_time(750);
-		timer_invulnerable.set_one_shot(true);
+		timer_invulnerable.setWaitTime(750);
+		timer_invulnerable.setOneShot(true);
 		timer_invulnerable.set_callback([&]()
 			{
 				is_invulnerable = false;
 			}
 		);
 
-		timer_invulnerable_blink.set_wait_time(75);
+		timer_invulnerable_blink.setWaitTime(75);
 		timer_invulnerable_blink.set_callback([&]()
 			{
 				is_showing_sketch_frame = !is_showing_sketch_frame;
 			}
 		);
 
-		timer_cursor_visibility.set_wait_time(2500);
-		timer_cursor_visibility.set_one_shot(true);
+		timer_cursor_visibility.setWaitTime(2500);
+		timer_cursor_visibility.setOneShot(true);
 		timer_cursor_visibility.set_callback([&]()
 			{
 				is_cursor_visible = false;
 			}
 		);
 
-		timer_run_effect_generation.set_wait_time(75);
+		timer_run_effect_generation.setWaitTime(75);
 		timer_run_effect_generation.set_callback([&]()
 			{
 				Vector2 particle_position;
@@ -83,7 +83,7 @@ public:
 			}
 		);
 
-		timer_die_effect_generation.set_wait_time(35);
+		timer_die_effect_generation.setWaitTime(35);
 		timer_die_effect_generation.set_callback([&]()
 			{
 				Vector2 particle_position;
@@ -94,8 +94,8 @@ public:
 			}
 		);
 
-		timer_attack_cd.set_wait_time(attack_cd);
-		timer_attack_cd.set_one_shot(true);
+		timer_attack_cd.setWaitTime(attack_cd);
+		timer_attack_cd.setOneShot(true);
 		timer_attack_cd.set_callback([&]()
 			{
 				can_attack = true;
@@ -245,7 +245,7 @@ public:
 				case 'F':
 					if (can_attack)
 					{
-						on_attack();
+						attack();
 						can_attack = false;
 						timer_attack_cd.restart();
 					}
@@ -253,7 +253,7 @@ public:
 				case 'G':
 					if (mp >= 100)
 					{
-						on_attack_ex();
+						attackEx();
 						mp = 0;
 					}
 					break;
@@ -274,7 +274,7 @@ public:
 				case VK_OEM_PERIOD:
 					if (can_attack)
 					{
-						on_attack();
+						attack();
 						can_attack = false;
 						timer_attack_cd.restart();
 					}
@@ -282,7 +282,7 @@ public:
 				case VK_OEM_2:
 					if (mp >= 100)
 					{
-						on_attack_ex();
+						attackEx();
 						mp = 0;
 					}
 					break;
@@ -353,8 +353,8 @@ public:
 		position_land_effect.y = position.y + size.y - effect_frame->getheight();
 	}
 
-	virtual void on_attack() {}
-	virtual void on_attack_ex() {}
+	virtual void attack() {}
+	virtual void attackEx() {}
 
 	void set_hp(int val)
 	{
@@ -383,12 +383,12 @@ public:
 		position.x = x; position.y = y;
 	}
 
-	const Vector2& get_position() const
+	const Vector2& getPosition() const
 	{
 		return position;
 	}
 
-	const Vector2& get_size() const
+	const Vector2& getSize() const
 	{
 		return size;
 	}
@@ -399,8 +399,8 @@ protected:
 	const float jump_velocity = -0.85f;
 
 protected:
-	int mp = 0;
-	int hp = 100;
+	float mp = 0;
+	float hp = 100.0f;
 	int attack_cd = 500;
 	IMAGE img_sketch;
 	PlayerID id = PlayerID::P1;
@@ -497,7 +497,6 @@ protected:
 			{
 				make_invulnerable();
 				bullet->collide();
-				bullet->setValid(false);
 				hp -= bullet->getDamage();
 				last_hurt_direction = bullet->getPosition() - position;
 

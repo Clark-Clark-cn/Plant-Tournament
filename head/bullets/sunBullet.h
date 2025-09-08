@@ -6,8 +6,6 @@
 extern Atlas atlas_sun;
 extern Atlas atlas_sun_explode;
 
-extern Camera camera;
-
 class SunBullet : public Bullet
 {
 public:
@@ -32,7 +30,7 @@ public:
     }
     ~SunBullet() = default;
 
-    virtual void collide() override
+    void collide() override
     {
         mciSendString(L"play sun_explode from 0", nullptr, 0, nullptr);
         Bullet::collide();

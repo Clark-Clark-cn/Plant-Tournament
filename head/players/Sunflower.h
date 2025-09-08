@@ -72,7 +72,7 @@ public:
 	}
 	~Sunflower() = default;
 
-	void on_attack() override
+	void attack() override
 	{
 		Bullet* bullet = new SunBullet();
 		
@@ -88,7 +88,7 @@ public:
 		bullet_list.push_back(bullet);
 	}
 
-	void on_attack_ex() override
+	void attackEx() override
 	{
 		mciSendString(L"play sun_text from 0", NULL, 0, NULL);
 		is_attacking_ex = true;
@@ -101,8 +101,8 @@ public:
 		Vector2 bullet_position, bullet_velocity;
 		Player* target = id==PlayerID::P1?player_2:player_1;
 		const Vector2& bullet_size = bullet->getSize();
-		const Vector2& target_size = target->get_size();
-		const Vector2& target_position = target->get_position();
+		const Vector2& target_size = target->getSize();
+		const Vector2& target_position = target->getPosition();
 		bullet_position.x = target_position.x + (target_size.x - bullet_size.x) / 2;
 		bullet_position.y=-size.y;
 		bullet_velocity.x=0;

@@ -56,14 +56,14 @@ public:
         pos_img_sky = {(getwidth()-img_sky.getwidth())/2, (getheight()-img_sky.getheight())/2};
         pos_img_hills = {(getwidth()-img_hills.getwidth())/2, (getheight()-img_hills.getheight())/2};
         timer_winner_slide_in.restart();
-        timer_winner_slide_in.set_wait_time(2500);
-        timer_winner_slide_in.set_one_shot(true);
+        timer_winner_slide_in.setWaitTime(2500);
+        timer_winner_slide_in.setOneShot(true);
         timer_winner_slide_in.set_callback([&]{
             is_slide_out_started=true;
         });
         timer_winner_slide_out.restart();
-        timer_winner_slide_out.set_wait_time(1000);
-        timer_winner_slide_out.set_one_shot(true);
+        timer_winner_slide_out.setWaitTime(1000);
+        timer_winner_slide_out.setOneShot(true);
         timer_winner_slide_out.set_callback([&]{
             screenManager.switchTo(ScreenManager::ScreenType::MainMenu);
         });

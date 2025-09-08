@@ -34,17 +34,6 @@ public:
 		animation_attack_ex_right.setAtlas(&atlas_peashooter_attack_ex_right);
 		animation_die_left.setAtlas(&atlas_peashooter_die_left);
 		animation_die_right.setAtlas(&atlas_peashooter_die_right);
-		animation_idle_right.setAtlas(&atlas_peashooter_idle_right);
-		animation_run_left.setAtlas(&atlas_peashooter_run_left);
-		animation_run_right.setAtlas(&atlas_peashooter_run_right);
-		animation_attack_ex_left.setAtlas(&atlas_peashooter_attack_ex_left);
-		animation_attack_ex_right.setAtlas(&atlas_peashooter_attack_ex_right);
-		animation_die_left.setAtlas(&atlas_peashooter_die_left);
-		animation_attack_ex_left.setAtlas(&atlas_peashooter_attack_ex_left);
-		animation_attack_ex_right.setAtlas(&atlas_peashooter_attack_ex_right);
-		animation_die_left.setAtlas(&atlas_peashooter_die_left);
-		animation_die_right.setAtlas(&atlas_peashooter_die_right);
-		animation_die_right.setAtlas(&atlas_peashooter_die_right);
 
 		animation_idle_left.setInterval(75);
 		animation_idle_right.setInterval(75);
@@ -54,10 +43,6 @@ public:
 		animation_attack_ex_right.setInterval(75);
 		animation_die_left.setInterval(75);
 		animation_die_right.setInterval(75);
-		animation_attack_ex_left.setInterval(75);
-		animation_attack_ex_right.setInterval(75);
-		animation_die_left.setInterval(150);
-		animation_die_right.setInterval(150);
 
 		animation_idle_left.setLoop(true);
 		animation_idle_right.setLoop(true);
@@ -66,10 +51,10 @@ public:
 		animation_die_left.setLoop(false);
 		animation_die_right.setLoop(false);
 
-		timer_attack_ex.set_wait_time(attack_ex_duration);
-		timer_attack_ex.set_one_shot(true);
+		timer_attack_ex.setWaitTime(attack_ex_duration);
+		timer_attack_ex.setOneShot(true);
 		timer_attack_ex.set_callback([&](){ is_attacking_ex = false; });
-		timer_spawn_pea_ex.set_wait_time(100);
+		timer_spawn_pea_ex.setWaitTime(100);
 		timer_spawn_pea_ex.set_callback([&](){ spawn_pea_bullet(speed_pea_ex); });
 
 		statusBar.setAvatar(&img_avatar_peashooter);
@@ -79,7 +64,7 @@ public:
 	}
 	~Peashooter() = default;
 
-	void on_attack() override
+	void attack() override
 	{
 		std::wstring cmd=L"play pea_shoot_"+std::to_wstring(rand() % 2) + L" from 0";
 		mciSendString(cmd.c_str(), NULL, 0, NULL);
@@ -87,7 +72,7 @@ public:
 		spawn_pea_bullet(speed_pea);
 	}
 
-	void on_attack_ex() override
+	void attackEx() override
 	{
 		mciSendString(_T("play pea_shoot_ex from 0"), NULL, 0, NULL);
 		is_attacking_ex = true;

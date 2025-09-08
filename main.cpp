@@ -69,6 +69,10 @@ void load_game_resources()
     flip_image(&img_peashooter_selector_bg_right, &img_peashooter_selector_bg_left);
     loadimage(&img_sunflower_selector_bg_right, L"res/sunflower_selector_background.png");
     flip_image(&img_sunflower_selector_bg_right, &img_sunflower_selector_bg_left);
+    loadimage(&img_nut_selector_bg_right, L"res/nut_selector_background.png");
+    flip_image(&img_nut_selector_bg_right, &img_nut_selector_bg_left);
+    loadimage(&img_gloomshroom_selector_bg_right, L"res/gloomshroom_selector_background.png");
+    flip_image(&img_gloomshroom_selector_bg_right, &img_gloomshroom_selector_bg_left);
 
     loadimage(&img_sky, L"res/sky.png");
     loadimage(&img_hills, L"res/hills.png");
@@ -96,6 +100,24 @@ void load_game_resources()
     atlas_sunflower_die_right.loadimage(L"res/sunflower_die_%d.png",2);
     flip_atlas(atlas_sunflower_die_right, atlas_sunflower_die_left);
 
+    atlas_nut_idle_right.loadimage(L"res/nut_idle_%d.png",3);
+    flip_atlas(atlas_nut_idle_right, atlas_nut_idle_left);
+    atlas_nut_run_right.loadimage(L"res/nut_run_%d.png",3);
+    flip_atlas(atlas_nut_run_right, atlas_nut_run_left);
+    atlas_nut_attack_ex_right.loadimage(L"res/nut_attack_ex_%d.png",5);
+    flip_atlas(atlas_nut_attack_ex_right, atlas_nut_attack_ex_left);
+    atlas_nut_die_right.loadimage(L"res/nut_die_%d.png",3);
+    flip_atlas(atlas_nut_die_right, atlas_nut_die_left);
+
+    atlas_gloomshroom_idle_right.loadimage(L"res/gloomshroom_idle_%d.png",4);
+    flip_atlas(atlas_gloomshroom_idle_right, atlas_gloomshroom_idle_left);
+    atlas_gloomshroom_run_right.loadimage(L"res/gloomshroom_run_%d.png",3);
+    flip_atlas(atlas_gloomshroom_run_right, atlas_gloomshroom_run_left);
+    atlas_gloomshroom_attack_ex_right.loadimage(L"res/gloomshroom_attack_ex_%d.png",7);
+    flip_atlas(atlas_gloomshroom_attack_ex_right, atlas_gloomshroom_attack_ex_left);
+    atlas_gloomshroom_die_right.loadimage(L"res/gloomshroom_die_%d.png",3);
+    flip_atlas(atlas_gloomshroom_die_right, atlas_gloomshroom_die_left);
+
     loadimage(&img_pea, L"res/pea.png");
     atlas_pea_break.loadimage(L"res/pea_break_%d.png",3);
     atlas_sun.loadimage(L"res/sun_%d.png",5);
@@ -103,6 +125,9 @@ void load_game_resources()
     atlas_sun_ex.loadimage(L"res/sun_ex_%d.png",5);
     atlas_sun_ex_explode.loadimage(L"res/sun_ex_explode_%d.png",5);
     atlas_sun_text.loadimage(L"res/sun_text_%d.png",6);
+    atlas_bubble.loadimage(L"res/bubbles_%d.png",7);
+    atlas_bubble_ex.loadimage(L"res/bubbles_ex_%d.png",7);
+    atlas_nut_explode.loadimage(L"res/nut_explode_%d.png",5);
 
     atlas_run_effect.loadimage(L"res/run_effect_%d.png",4);
     atlas_land_effect.loadimage(L"res/land_effect_%d.png",2);
@@ -114,6 +139,8 @@ void load_game_resources()
 
     loadimage(&img_avatar_peashooter, L"res/avatar_peashooter.png");
     loadimage(&img_avatar_sunflower, L"res/avatar_sunflower.png");
+    loadimage(&img_avatar_nut, L"res/avatar_nut.png");
+    loadimage(&img_avatar_gloomshroom, L"res/avatar_gloomshroom.png");
 }
 void load_audio_resources()
 {
@@ -128,6 +155,11 @@ void load_audio_resources()
     mciSendString(L"open res/sun_explode.mp3 alias sun_explode", NULL, 0, NULL);
     mciSendString(L"open res/sun_explode_ex.mp3 alias sun_explode_ex", NULL, 0, NULL);
     mciSendString(L"open res/sun_text.mp3 alias sun_text", NULL, 0, NULL);
+    mciSendString(L"open res/bubbles_shot.mp3 alias bubbles_shot", NULL, 0, NULL);
+    mciSendString(L"open res/bubbles_shot_ex.mp3 alias bubbles_shot_ex", NULL, 0, NULL);
+    mciSendString(L"open res/nut_explode.mp3 alias nut_explode", NULL, 0, NULL);
+
+    mciSendString(L"open res/nut_dash.wav alias nut_dash", NULL, 0, NULL);
     mciSendString(L"open res/ui_confirm.wav alias ui_confirm", NULL, 0, NULL);
     mciSendString(L"open res/ui_switch.wav alias ui_switch", NULL, 0, NULL);
     mciSendString(L"open res/ui_win.wav alias ui_win", NULL, 0, NULL);

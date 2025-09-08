@@ -5,7 +5,7 @@ class Camera
 {
 public:
     Camera(){
-        timer_shake.set_one_shot(true);
+        timer_shake.setOneShot(true);
         timer_shake.set_callback([&]{
             is_shaking = false;
             reset();
@@ -13,7 +13,7 @@ public:
     }
     ~Camera()=default;
 
-    const Vector2& get_position() const {
+    const Vector2& getPosition() const {
         return position;
     }
     void reset(){
@@ -30,7 +30,7 @@ public:
     void shake(float strength,int duration){
         shaking_strength = strength;
         is_shaking = true;
-        timer_shake.set_wait_time(duration);
+        timer_shake.setWaitTime(duration);
         timer_shake.restart();
     }
 private:
