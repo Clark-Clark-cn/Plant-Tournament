@@ -24,6 +24,7 @@ extern Player* player_1;
 extern Player* player_2;
 
 extern std::vector<Bullet*> bullet_list;
+extern std::vector<Bullet*> effort_bullets;
 extern Camera camera;
 
 class game : public Screen
@@ -131,6 +132,9 @@ public:
                 return deletable;
              }), bullet_list.end());
         for(auto& bullet:bullet_list){
+            bullet->update(delta);
+        }
+        for(auto& bullet:effort_bullets){
             bullet->update(delta);
         }
         if(player_1->get_hp()<=0||player_2->get_hp()<=0){

@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "../bullets/Bubble.h"
 #include "../bullets/BubbleEx.h"
+#include "../StatusBar.h"
 
 extern IMAGE img_avatar_gloomshroom;
 extern Atlas atlas_gloomshroom_idle_left;
@@ -49,7 +50,7 @@ public:
         timer_attack_ex.set_callback([&](){
             is_attacking_ex=false;
         });
-        statusBar.setAvatar(&img_avatar_gloomshroom);
+        statusBar->setAvatar(&img_avatar_gloomshroom);
         size.x=96;
         size.y=96;
         attack_cd=200;

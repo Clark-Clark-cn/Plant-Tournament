@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "../Camera.h"
 #include "../bullets/peaBullet.h"
+#include "../StatusBar.h"
 
 extern Atlas atlas_peashooter_idle_left;
 extern Atlas atlas_peashooter_idle_right;
@@ -57,7 +58,7 @@ public:
 		timer_spawn_pea_ex.setWaitTime(100);
 		timer_spawn_pea_ex.set_callback([&](){ spawn_pea_bullet(speed_pea_ex); });
 
-		statusBar.setAvatar(&img_avatar_peashooter);
+		statusBar->setAvatar(&img_avatar_peashooter);
 		size.x = 96;
 		size.y = 96;
 		attack_cd = 100;

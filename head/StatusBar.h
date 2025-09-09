@@ -1,10 +1,11 @@
 #pragma once
 
 #include "base.h"
+#include "players/Player.h"
 
 class StatusBar{
 public:
-    StatusBar() = default;
+    StatusBar(Player* player) : owner(player) {}
     ~StatusBar() = default;
     void setAvatar(IMAGE* avatar) {
         this->avatar = avatar;
@@ -12,12 +13,6 @@ public:
     void setPos(int x,int y){
         pos.x = x;
         pos.y = y;
-    }
-    void setHP(int hp) {
-        this->hp = hp;
-    }
-    void setMP(int mp) {
-        this->mp = mp;
     }
     void draw(){
         putImage(pos.x, pos.y, avatar);
@@ -29,8 +24,8 @@ public:
         solidroundrect(pos.x+100,pos.y+10,pos.x+100+width+3,pos.y+33,4,4);
         solidroundrect(pos.x+100,pos.y+45,pos.x+100+width+3,pos.y+68,4,4);
 
-        float hpBarW=width*max(0,hp)/100.0f;
-        float mpBarW=width*min(100,mp)/100.0f;
+        float hpBarW=width*max(0,owner->hp)/100.0f;
+        float mpBarW=width*min(100,owner->mp)/100.0f;
 
         setfillcolor(RGB(197,61,67));
         solidroundrect(pos.x+100,pos.y+10,pos.x+100+hpBarW+3,pos.y+33,8,8);
@@ -40,7 +35,6 @@ public:
 private:
     IMAGE* avatar = nullptr;
     POINT pos={0,0};
-    int hp = 100;
-    int mp = 0;
     const int width=275;
+    Player* owner = nullptr;
 };

@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "../bullets/sunBullet.h"
 #include "../bullets/sunBulletEx.h"
+#include "../StatusBar.h"
 
 extern Atlas atlas_sunflower_idle_left;
 extern Atlas atlas_sunflower_idle_right;
@@ -65,7 +66,7 @@ public:
 				is_attacking_ex=false;
 				is_sun_text_visible=false;
 		});
-		statusBar.setAvatar(&img_avatar_sunflower);
+		statusBar->setAvatar(&img_avatar_sunflower);
 		size.x = 96;
 		size.y = 96;
 		attack_cd = 250;

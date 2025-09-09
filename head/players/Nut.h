@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "../bullets/nutexplode.h"
+#include "../StatusBar.h"
 
 extern IMAGE img_avatar_nut;
 extern Atlas atlas_nut_idle_left;
@@ -52,7 +53,7 @@ public:
             is_attacking_ex=false;
         });
 
-        statusBar.setAvatar(&img_avatar_nut);
+        statusBar->setAvatar(&img_avatar_nut);
         size.x=96;
         size.y=96;
         attack_cd=50;

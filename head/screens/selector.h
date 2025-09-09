@@ -5,6 +5,7 @@
 #include "../players/Peashooter.h"
 #include "../players/Sunflower.h"
 #include "../players/Gloomshroom.h"
+#include "../players/Yellowmshroom.h"
 #include "../players/Nut.h"
 #include "../Animation.h"
 #include <graphics.h>
@@ -38,6 +39,7 @@ extern Atlas atlas_sunflower_idle_right;
 extern IMAGE img_avatar_peashooter;
 extern IMAGE img_avatar_sunflower;
 extern IMAGE img_avatar_gloomshroom;
+extern IMAGE img_avatar_yellowmshroom;
 extern IMAGE img_avatar_nut;
 
 extern ScreenManager screenManager;
@@ -71,6 +73,10 @@ public:
 		animation_nut.setAtlas(&atlas_nut_idle_right);
 		animation_nut.setInterval(100);
 		animation_nut.setLoop(true);
+
+		animation_yellowmshroom.setAtlas(&atlas_yellowmshroom_idle_right);
+		animation_yellowmshroom.setInterval(100);
+		animation_yellowmshroom.setLoop(true);
 
 		pos_img_VS.x = (getwidth() - img_VS.getwidth()) / 2;
 		pos_img_VS.y = (getheight() - img_VS.getheight()) / 2;
@@ -110,6 +116,7 @@ public:
 		animation_sunflower.update(delta);
 		animation_gloomshroom.update(delta);
 		animation_nut.update(delta);
+		animation_yellowmshroom.update(delta);
 
 		selector_bg_scroll_offset_x += 5;
 
@@ -136,6 +143,9 @@ public:
 		case PlayerType::Nut:
 			img_p1_selector_bg = &img_nut_selector_bg_right;
 			break;
+		case PlayerType::Yellowmshroom:
+			img_p1_selector_bg = &img_yellowmshroom_selector_bg_right;
+			break;
 		default:
 			img_p1_selector_bg = &img_peashooter_selector_bg_right;
 			break;
@@ -154,6 +164,9 @@ public:
 			break;
 		case PlayerType::Nut:
 			img_p2_selector_bg = &img_nut_selector_bg_left;
+			break;
+		case PlayerType::Yellowmshroom:
+			img_p2_selector_bg = &img_yellowmshroom_selector_bg_left;
 			break;
 		default:
 			img_p2_selector_bg = &img_peashooter_selector_bg_left;
@@ -197,6 +210,11 @@ public:
 			pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone_right.getwidth() - textwidth(str_nut_name)) / 2;
 			outtextxy_shaded(pos_img_1P_name.x, pos_img_1P_name.y, str_nut_name);
 			break;
+		case PlayerType::Yellowmshroom:
+			animation_yellowmshroom.draw(camera, pos_animation_1P.x, pos_animation_1P.y);
+			pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone_right.getwidth() - textwidth(str_yellowmshroom_name)) / 2;
+			outtextxy_shaded(pos_img_1P_name.x, pos_img_1P_name.y, str_yellowmshroom_name);
+			break;
 		}
 
 		switch (player_type_2)
@@ -220,6 +238,11 @@ public:
 			animation_nut.draw(camera, pos_animation_2P.x, pos_animation_2P.y);
 			pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone_left.getwidth() - textwidth(str_nut_name)) / 2;
 			outtextxy_shaded(pos_img_2P_name.x, pos_img_2P_name.y, str_nut_name);
+			break;
+		case PlayerType::Yellowmshroom:
+			animation_yellowmshroom.draw(camera, pos_animation_2P.x, pos_animation_2P.y);
+			pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone_left.getwidth() - textwidth(str_yellowmshroom_name)) / 2;
+			outtextxy_shaded(pos_img_2P_name.x, pos_img_2P_name.y, str_yellowmshroom_name);
 			break;
 		}
 
@@ -310,6 +333,10 @@ public:
 			player_1 = new Nut();
 			img_player1_avatar = &img_avatar_nut;
 			break;
+		case PlayerType::Yellowmshroom:
+			player_1 = new Yellowmshroom();
+			img_player1_avatar = &img_avatar_yellowmshroom;
+			break;
 		}
 		player_1->set_id(PlayerID::P1);
 
@@ -330,6 +357,10 @@ public:
 		case PlayerType::Nut:
 			player_2 = new Nut(false);
 			img_player2_avatar = &img_avatar_nut;
+			break;
+		case PlayerType::Yellowmshroom:
+			player_2 = new Yellowmshroom(false);
+			img_player2_avatar = &img_avatar_yellowmshroom;
 			break;
 		}
 		player_2->set_id(PlayerID::P2);
@@ -353,6 +384,7 @@ private:
 		Sunflower,
 		Gloomshroom,
 		Nut,
+		Yellowmshroom,
 		Invalid
 	};
 
@@ -365,6 +397,7 @@ private:
 	Animation animation_sunflower;
 	Animation animation_gloomshroom;
 	Animation animation_nut;
+	Animation animation_yellowmshroom;
 	POINT pos_img_VS = { 0 };
 	POINT pos_img_1P = { 0 };
 	POINT pos_img_tip = { 0 };
@@ -385,6 +418,7 @@ private:
 	LPCTSTR str_sunflower_name = L"sunflower";
 	LPCTSTR str_gloomshroom_name = L"gloomshroom";
 	LPCTSTR str_nut_name = L"nut";
+	LPCTSTR str_yellowmshroom_name = L"yellowmshroom";
 	PlayerType player_type_1 = PlayerType::Peashooter;
 	PlayerType player_type_2 = PlayerType::Sunflower;
 	int selector_bg_scroll_offset_x = 0;
