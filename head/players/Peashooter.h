@@ -62,6 +62,7 @@ public:
 		size.x = 96;
 		size.y = 96;
 		attack_cd = 100;
+        timer_attack_cd.setWaitTime(attack_cd);
 	}
 	~Peashooter() = default;
 

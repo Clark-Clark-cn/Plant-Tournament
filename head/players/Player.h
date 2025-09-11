@@ -34,6 +34,14 @@ public:
 	virtual void attack() {}
 	virtual void attackEx() {}
 
+	void set_buttered(bool val)
+	{
+		is_buttered = val;
+		if (is_buttered)
+			timer_butter.restart();
+		is_left_key_down = false;
+		is_right_key_down = false;
+	}
 	void set_hp(int val)
 	{
 		hp = val;
@@ -65,7 +73,6 @@ public:
 	{
 		return size;
 	}
-
 protected:
 	const float gravity = 1.6e-3f;
 	const float run_velocity = 0.55f;

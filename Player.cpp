@@ -85,11 +85,17 @@ Player::Player(bool facing_right)
         }
     );
 
-    timer_attack_cd.setWaitTime(attack_cd);
     timer_attack_cd.setOneShot(true);
     timer_attack_cd.set_callback([&]()
         {
             can_attack = true;
+        }
+    );
+    timer_butter.setWaitTime(3000);
+    timer_butter.setOneShot(true);
+    timer_butter.set_callback([&]()
+        {
+            is_buttered = false;
         }
     );
 }
@@ -123,7 +129,7 @@ void Player::update(int delta)
         current_animation = last_hurt_direction.x < 0 ? &animation_die_left : &animation_die_right;
     }
 
-    current_animation->update(delta);
+    if(!is_buttered)current_animation->update(delta);
     animation_jump_effect.update(delta);
     animation_land_effect.update(delta);
 
@@ -196,7 +202,7 @@ void Player::draw(const Camera& camera)
     statusBar->draw();
 
     if(is_buttered){
-        putImage(camera,position.x-32,position.y+size.y-32,&img_butter_splat);
+        putImage(camera,position.x+size.x/4,position.y,&img_butter_splat);
     }
 
     if (is_debug)

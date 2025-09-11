@@ -57,6 +57,7 @@ public:
         size.x=96;
         size.y=96;
         attack_cd=50;
+        timer_attack_cd.setWaitTime(attack_cd);
     }
     ~Nut()=default;
     void attack()override{
@@ -65,8 +66,6 @@ public:
             position.x+=dash_distance;
         else
             position.x-=dash_distance;
-        timer_attack_cd.restart();
-        can_attack=false;
     }
     void attackEx()override{
         mciSendString(L"play nut_explode from 0", NULL, 0, NULL);

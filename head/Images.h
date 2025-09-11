@@ -31,6 +31,8 @@ IMAGE img_nut_selector_bg_left;
 IMAGE img_nut_selector_bg_right;
 IMAGE img_gloomshroom_selector_bg_left;
 IMAGE img_gloomshroom_selector_bg_right;
+IMAGE img_yellowmshroom_selector_bg_left;
+IMAGE img_yellowmshroom_selector_bg_right;
 
 IMAGE img_sky;
 IMAGE img_hills;
@@ -76,7 +78,18 @@ Atlas atlas_gloomshroom_attack_ex_right;
 Atlas atlas_gloomshroom_die_left;
 Atlas atlas_gloomshroom_die_right;
 
+Atlas atlas_yellowmshroom_idle_left;
+Atlas atlas_yellowmshroom_idle_right;
+Atlas atlas_yellowmshroom_run_left;
+Atlas atlas_yellowmshroom_run_right;
+Atlas atlas_yellowmshroom_attack_ex_left;
+Atlas atlas_yellowmshroom_attack_ex_right;
+Atlas atlas_yellowmshroom_die_left;
+Atlas atlas_yellowmshroom_die_right;
+
 IMAGE img_pea;
+IMAGE img_butter;
+IMAGE img_cop_cannon;
 Atlas atlas_pea_break;
 Atlas atlas_sun;
 Atlas atlas_sun_explode;
@@ -99,6 +112,17 @@ IMAGE img_avatar_peashooter;
 IMAGE img_avatar_sunflower;
 IMAGE img_avatar_nut;
 IMAGE img_avatar_gloomshroom;
+IMAGE img_avatar_yellowmshroom;
+
+IMAGE img_butter_splat;
+IMAGE img_buff_icon_hurry;
+IMAGE img_buff_icon_invisible;
+IMAGE img_buff_icon_recover;
+IMAGE img_buff_icon_silence;
+
+Atlas atlas_buff_box_blue;
+Atlas atlas_buff_box_pink;
+Atlas atlas_buff_box_yellow;
 
 IMAGE* img_player1_avatar=nullptr;
 IMAGE* img_player2_avatar=nullptr;

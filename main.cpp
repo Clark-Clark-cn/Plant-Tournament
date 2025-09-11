@@ -18,6 +18,7 @@ Player* player_2 = nullptr;
 
 
 std::vector<Bullet*> bullet_list{};
+std::vector<Bullet*> effort_bullets{};
 std::vector<Platform> platform_list{};
 
 int FPS = 60;
@@ -73,6 +74,8 @@ void load_game_resources()
     flip_image(&img_nut_selector_bg_right, &img_nut_selector_bg_left);
     loadimage(&img_gloomshroom_selector_bg_right, L"res/gloomshroom_selector_background.png");
     flip_image(&img_gloomshroom_selector_bg_right, &img_gloomshroom_selector_bg_left);
+    img_yellowmshroom_selector_bg_left = img_gloomshroom_selector_bg_left;
+    img_yellowmshroom_selector_bg_right = img_gloomshroom_selector_bg_right;
 
     loadimage(&img_sky, L"res/sky.png");
     loadimage(&img_hills, L"res/hills.png");
@@ -118,7 +121,18 @@ void load_game_resources()
     atlas_gloomshroom_die_right.loadimage(L"res/gloomshroom_die_%d.png",3);
     flip_atlas(atlas_gloomshroom_die_right, atlas_gloomshroom_die_left);
 
+    atlas_yellowmshroom_idle_right.loadimage(L"res/yellowmshroom_idle_%d.png",4);
+    flip_atlas(atlas_yellowmshroom_idle_right, atlas_yellowmshroom_idle_left);
+    atlas_yellowmshroom_run_right.loadimage(L"res/yellowmshroom_run_%d.png",3);
+    flip_atlas(atlas_yellowmshroom_run_right, atlas_yellowmshroom_run_left);
+    atlas_yellowmshroom_attack_ex_right.loadimage(L"res/yellowmshroom_attack_ex_%d.png",7);
+    flip_atlas(atlas_yellowmshroom_attack_ex_right, atlas_yellowmshroom_attack_ex_left);
+    atlas_yellowmshroom_die_right.loadimage(L"res/yellowmshroom_die_%d.png",3);
+    flip_atlas(atlas_yellowmshroom_die_right, atlas_yellowmshroom_die_left);
+
     loadimage(&img_pea, L"res/pea.png");
+    loadimage(&img_butter, L"res/butter.png");
+    loadimage(&img_cop_cannon, L"res/cop_cannon.png");
     atlas_pea_break.loadimage(L"res/pea_break_%d.png",3);
     atlas_sun.loadimage(L"res/sun_%d.png",5);
     atlas_sun_explode.loadimage(L"res/sun_explode_%d.png",5);
@@ -141,6 +155,17 @@ void load_game_resources()
     loadimage(&img_avatar_sunflower, L"res/avatar_sunflower.png");
     loadimage(&img_avatar_nut, L"res/avatar_nut.png");
     loadimage(&img_avatar_gloomshroom, L"res/avatar_gloomshroom.png");
+    loadimage(&img_avatar_yellowmshroom, L"res/avatar_yellowmshroom.png");
+
+    loadimage(&img_butter_splat, L"res/butter_splat.png");
+    loadimage(&img_buff_icon_hurry, L"res/buff_icon_hurry.png");
+    loadimage(&img_buff_icon_invisible, L"res/buff_icon_invisible.png");
+    loadimage(&img_buff_icon_recover, L"res/buff_icon_recover.png");
+    loadimage(&img_buff_icon_silence, L"res/buff_icon_silence.png");
+
+    atlas_buff_box_blue.loadimage(L"res/buff_box_blue_%d.png",4);
+    atlas_buff_box_pink.loadimage(L"res/buff_box_pink_%d.png",4);
+    atlas_buff_box_yellow.loadimage(L"res/buff_box_yellow_%d.png",4);
 }
 void load_audio_resources()
 {
@@ -158,6 +183,10 @@ void load_audio_resources()
     mciSendString(L"open res/bubbles_shot.mp3 alias bubbles_shot", NULL, 0, NULL);
     mciSendString(L"open res/bubbles_shot_ex.mp3 alias bubbles_shot_ex", NULL, 0, NULL);
     mciSendString(L"open res/nut_explode.mp3 alias nut_explode", NULL, 0, NULL);
+    mciSendString(L"open res/launch.mp3 alias launch", NULL, 0, NULL);
+
+    mciSendString(L"open res/butter.ogg alias butter", NULL, 0, NULL);
+    mciSendString(L"open res/boom.wav alias boom", NULL, 0, NULL);
 
     mciSendString(L"open res/nut_dash.wav alias nut_dash", NULL, 0, NULL);
     mciSendString(L"open res/ui_confirm.wav alias ui_confirm", NULL, 0, NULL);

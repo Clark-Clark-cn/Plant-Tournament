@@ -40,8 +40,8 @@ public:
         animation_idle_right.setLoop(true);
         animation_run_left.setLoop(true);
         animation_run_right.setLoop(true);
-        animation_attack_ex_left.setLoop(false);
-        animation_attack_ex_right.setLoop(false);
+        animation_attack_ex_left.setLoop(true);
+        animation_attack_ex_right.setLoop(true);
         animation_die_left.setLoop(false);
         animation_die_right.setLoop(false);
 
@@ -53,7 +53,8 @@ public:
         statusBar->setAvatar(&img_avatar_gloomshroom);
         size.x=96;
         size.y=96;
-        attack_cd=200;
+        attack_cd=700;
+        timer_attack_cd.setWaitTime(attack_cd);
     }
     ~Gloomshroom()=default;
 
@@ -62,7 +63,7 @@ public:
         Bullet* bullet = new Bubble(this);
 
         const Vector2& bullet_size = bullet->getSize();
-        Vector2 bullet_position=position-bullet_size/4;
+        Vector2 bullet_position=position+(size-bullet_size)/2;
         bullet->setPosition(bullet_position);
         bullet->setVelocity({0,0});
         bullet->setCollideTarget(id==PlayerID::P1?PlayerID::P2:PlayerID::P1);
