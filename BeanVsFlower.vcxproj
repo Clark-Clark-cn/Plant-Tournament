@@ -132,7 +132,13 @@
     <ClInclude Include="head\Animation.h" />
     <ClInclude Include="head\Atlas.h" />
     <ClInclude Include="head\base.h" />
+    <ClInclude Include="head\bullets\Bubble.h" />
+    <ClInclude Include="head\bullets\BubbleEx.h" />
     <ClInclude Include="head\bullets\Bullet.h" />
+    <ClInclude Include="head\bullets\Butter.h" />
+    <ClInclude Include="head\bullets\CopCannon.h" />
+    <ClInclude Include="head\bullets\efforts.h" />
+    <ClInclude Include="head\bullets\NutExplode.h" />
     <ClInclude Include="head\bullets\peaBullet.h" />
     <ClInclude Include="head\bullets\sunBullet.h" />
     <ClInclude Include="head\bullets\sunBulletEX.h" />
@@ -140,10 +146,13 @@
     <ClInclude Include="head\Images.h" />
     <ClInclude Include="head\Particle.h" />
     <ClInclude Include="head\platform.h" />
+    <ClInclude Include="head\players\Gloomshroom.h" />
+    <ClInclude Include="head\players\Nut.h" />
     <ClInclude Include="head\players\Peashooter.h" />
     <ClInclude Include="head\players\Player.h" />
     <ClInclude Include="head\players\player_id.h" />
     <ClInclude Include="head\players\Sunflower.h" />
+    <ClInclude Include="head\players\Yellowmshroom.h" />
     <ClInclude Include="head\screens\game.h" />
     <ClInclude Include="head\screens\mainmenu.h" />
     <ClInclude Include="head\screens\manager.h" />

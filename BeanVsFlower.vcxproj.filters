@@ -95,5 +95,32 @@
     <ClInclude Include="head\screens\selector.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="head\bullets\Bubble.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="head\bullets\BubbleEx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="head\bullets\Butter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="head\bullets\CopCannon.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="head\bullets\efforts.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="head\bullets\NutExplode.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="head\players\Gloomshroom.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="head\players\Nut.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="head\players\Yellowmshroom.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 #include "head/players/Player.h"
 #include "head/StatusBar.h"
+#include "head/bullets/efforts.h"
 
 extern IMAGE img_1p_cursor;
 extern IMAGE img_2p_cursor;
@@ -11,10 +12,11 @@ extern Atlas atlas_land_effect;
 extern IMAGE img_butter_splat;
 
 extern std::vector<Bullet*> bullet_list;
-extern std::vector<Bullet*> effort_bullets;
+std::vector<EffortBullet*> effort_bullets;
 extern std::vector<Platform> platform_list;
 
 extern bool is_debug;
+extern bool is_game_over;
 
 
 Player::Player(bool facing_right)
@@ -98,6 +100,34 @@ Player::Player(bool facing_right)
             is_buttered = false;
         }
     );
+    timer_silence.setWaitTime(1000);
+    timer_silence.setOneShot(true);
+    timer_silence.set_callback([&]()
+        {
+            is_silenced = false;
+        }
+    );
+    timer_recover.setWaitTime(5000);
+    timer_recover.setOneShot(true);
+    timer_recover.set_callback([&]()
+        {
+            is_recovering = false;
+        }
+    );
+    timer_hurry.setWaitTime(5000);
+    timer_hurry.setOneShot(true);
+    timer_hurry.set_callback([&]()
+        {
+            is_hurrying = false;
+        }
+    );
+    timer_invisible.setWaitTime(5000);
+    timer_invisible.setOneShot(true);
+    timer_invisible.set_callback([&]()
+        {
+            is_invisible = false;
+        }
+    );
 }
 
 void Player::update(int delta)
@@ -110,7 +140,10 @@ void Player::update(int delta)
         {
             is_facing_right = direction > 0;
             current_animation = is_facing_right ? &animation_run_right : &animation_run_left;
-            on_run(direction * run_velocity * delta);
+            int delta_run=0;
+            if(!is_hurrying)delta_run=direction * run_velocity * delta;
+            else delta_run=direction * run_velocity * 1.5f * delta;
+            on_run(delta_run);
         }
     }
     else
@@ -166,12 +199,15 @@ void Player::update(int delta)
 
     if(position.y>getwidth())hp=0;
     randomSummonEffortBullets();
-    
+
+    if(is_recovering&&hp<100)hp+=0.02f*delta;
+
     if(is_silenced)timer_silence.update(delta);
     if(is_recovering)timer_recover.update(delta);
     if(is_hurrying)timer_hurry.update(delta);
     if(is_invisible)timer_invisible.update(delta);
     if(is_buttered)timer_butter.update(delta);
+    if(is_game_over)statusBar->setVisible(false);
 }
 
 void Player::draw(const Camera& camera)
@@ -191,11 +227,11 @@ void Player::draw(const Camera& camera)
         particle.draw(camera);
     }
 
-    if (hp > 0 && is_invulnerable && is_showing_sketch_frame)
+    if (hp > 0 && is_invulnerable && is_showing_sketch_frame && !is_invisible)
     {
         putImage(camera, position.x, position.y, &img_sketch);
     }
-    else
+    else if(!is_invisible)
     {
         current_animation->draw(camera, (int)position.x, (int)position.y);
     }
@@ -227,8 +263,6 @@ void Player::draw(const Camera& camera)
 void Player::input(const ExMessage& msg){
     if (hp <= 0)
         return;
-    if(is_silenced)
-        return;
     if(is_buttered)
         return;
 
@@ -250,7 +284,7 @@ void Player::input(const ExMessage& msg){
                 on_jump();
                 break;
             case 'F':
-                if (can_attack)
+                if (can_attack&&!is_silenced)
                 {
                     attack();
                     can_attack = false;
@@ -279,7 +313,7 @@ void Player::input(const ExMessage& msg){
                 on_jump();
                 break;
             case VK_OEM_PERIOD:
-                if (can_attack)
+                if (can_attack && !is_silenced)
                 {
                     attack();
                     can_attack = false;
@@ -386,12 +420,12 @@ void Player::move_and_collide(int delta)	{
             }
         }
     }
-    for (Bullet* bullet : effort_bullets)
+    for (EffortBullet* bullet : effort_bullets)
     {
         if (!bullet->getValid())
             continue;
 
-        if (bullet->checkCollision(position, size))bullet->collide();
+        if (bullet->checkCollision(position, size))bullet->collide(this);
     }
 }
 
@@ -438,7 +472,8 @@ void Player::on_jump()
 
 void Player::randomSummonEffortBullets()
 {
-    if (rand() % 100 < 5)
+    if (rand() % 100 == 0)
     {
+        effort_bullets.push_back(new EffortBullet());
     }
 }

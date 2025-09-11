@@ -18,7 +18,6 @@ Player* player_2 = nullptr;
 
 
 std::vector<Bullet*> bullet_list{};
-std::vector<Bullet*> effort_bullets{};
 std::vector<Platform> platform_list{};
 
 int FPS = 60;

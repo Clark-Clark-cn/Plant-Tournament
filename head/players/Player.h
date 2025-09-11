@@ -12,10 +12,12 @@
 #include <graphics.h>
 
 class StatusBar;
+class EffortBullet;
 
 class Player
 {
 	friend class StatusBar;
+	friend class EffortBullet;
 public:
 	Player(bool facing_right = true);
 	~Player() = default;
@@ -62,6 +64,34 @@ public:
 	void set_position(float x, float y)
 	{
 		position.x = x; position.y = y;
+	}
+
+	void set_silenced(bool val)
+	{
+		is_silenced = val;
+		if (is_silenced)
+			timer_silence.restart();
+	}
+
+	void set_invisible(bool val)
+	{
+		is_invisible = val;
+		if (is_invisible)
+			timer_invisible.restart();
+	}
+
+	void set_hurrying(bool val)
+	{
+		is_hurrying = val;
+		if (is_hurrying)
+			timer_hurry.restart();
+	}
+
+	void set_recovering(bool val)
+	{
+		is_recovering = val;
+		if (is_recovering)
+			timer_recover.restart();
 	}
 
 	const Vector2& getPosition() const

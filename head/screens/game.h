@@ -5,6 +5,7 @@
 #include "../base.h"
 #include "../platform.h"
 #include "../players/Player.h"
+#include "../bullets/efforts.h"
 #include <algorithm>
 #include <vector>
 
@@ -24,8 +25,10 @@ extern Player* player_1;
 extern Player* player_2;
 
 extern std::vector<Bullet*> bullet_list;
-extern std::vector<Bullet*> effort_bullets;
+extern std::vector<EffortBullet*> effort_bullets;
 extern Camera camera;
+
+bool is_game_over=false;
 
 class game : public Screen
 {
@@ -38,7 +41,6 @@ class game : public Screen
     int pos_x_img_winner_bar_dst=0;
     int pos_x_img_winner_text_dst=0;
     const float gravity = 5.0f;
-    bool is_game_over = false;
     Timer timer_winner_slide_in;
     Timer timer_winner_slide_out;
     bool is_slide_out_started=false;
@@ -131,6 +133,12 @@ public:
                 if(deletable) delete bullet;
                 return deletable;
              }), bullet_list.end());
+        effort_bullets.erase(std::remove_if(effort_bullets.begin(), effort_bullets.end(),
+            [](const EffortBullet* bullet) {
+                bool deletable = bullet->checkCanRemove();
+                if (deletable) delete bullet;
+                return deletable;
+            }), effort_bullets.end());
         for(auto& bullet:bullet_list){
             bullet->update(delta);
         }
@@ -176,6 +184,9 @@ public:
         player_1->draw(camera);
         player_2->draw(camera);
         for(auto& bullet:bullet_list){
+            bullet->draw(camera);
+        }
+        for(auto& bullet:effort_bullets){
             bullet->draw(camera);
         }
         if(is_game_over){
