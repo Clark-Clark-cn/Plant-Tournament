@@ -171,6 +171,14 @@
     <ClInclude Include="head\StatusBar.h" />
     <ClInclude Include="head\Timer.h" />
     <ClInclude Include="head\Vector2.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PlantTournament.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
+    <Image Include="icon1.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
