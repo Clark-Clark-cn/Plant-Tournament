@@ -31,7 +31,7 @@ public:
         solidroundrect(pos.x+100,pos.y+10,pos.x+100+width+3,pos.y+33,4,4);
         solidroundrect(pos.x+100,pos.y+45,pos.x+100+width+3,pos.y+68,4,4);
 
-        float hpBarW=width*max(0,owner->hp)/100.0f;
+        float hpBarW=width*max(0,owner->hp)/owner->max_hp;
         float mpBarW=width*min(100,owner->mp)/100.0f;
 
         setfillcolor(RGB(197,61,67));

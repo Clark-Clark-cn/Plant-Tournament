@@ -83,12 +83,11 @@ protected:
     Vector2 position;
     Vector2 size;
     Vector2 velocity;
-    PlayerID collideTarget;
+    PlayerID collideTarget=PlayerID::P1;
     bool once=true;
     bool isValid=true;
     bool canRemove=false;
     std::function<void()> callback=nullptr;
-    PlayerID targetID=PlayerID::P1;
 
     bool checkIfExceedsScreen() const {
         return position.x + size.x < 0 || position.x >= getwidth() ||

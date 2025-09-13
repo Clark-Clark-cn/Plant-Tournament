@@ -1,5 +1,5 @@
 #include "Player.h"
-#include "../bullets/nutexplode.h"
+#include "../bullets/NutExplode.h"
 #include "../StatusBar.h"
 
 extern IMAGE img_avatar_nut;
@@ -15,7 +15,9 @@ extern Atlas atlas_nut_die_right;
 class Nut:public Player
 {
 public:
-    Nut(bool facing_right=true):Player(facing_right){
+    Nut(bool facing_right=true):Player(facing_right),
+        dash_distance(Config::getInstance()->getInt("player.nut.dash_distance"))
+    {
         animation_idle_left.setAtlas(&atlas_nut_idle_left);
         animation_idle_right.setAtlas(&atlas_nut_idle_right);
         animation_run_left.setAtlas(&atlas_nut_run_left);
@@ -54,9 +56,9 @@ public:
         });
 
         statusBar->setAvatar(&img_avatar_nut);
-        size.x=96;
-        size.y=96;
-        attack_cd=50;
+        attack_cd=Config::getInstance()->getInt("player.nut.attack_cd");
+        attackEx_mp_reward=Config::getInstance()->getInt("player.nut.attackEx.mp_reward");
+        Ex_damage=Config::getInstance()->getInt("player.nut.Exdamage");
         timer_attack_cd.setWaitTime(attack_cd);
     }
     ~Nut()=default;
@@ -73,13 +75,13 @@ public:
     }
     void update(int delta)override{
         Player::update(delta);
-        if(hp<100.0f)hp+=delta/100.0f;
-        if(hp>100.0f)hp=100.0f;
+        if(hp<max_hp)hp+=delta/100.0f;
+        if(hp>max_hp)hp=max_hp;
         if(mp<100)mp+=delta/150.0f;
         if(mp>100)mp=100.0f;
     }
 private:
-    const int dash_distance=30;
+    const int dash_distance;
     void SummonBoom(){
         Bullet* boom = new NutExplode();
         const Vector2& boom_size = boom->getSize();
@@ -87,7 +89,8 @@ private:
         boom->setPosition(boom_position);
         boom->setVelocity({0,0});
         boom->setCollideTarget(id==PlayerID::P1?PlayerID::P2:PlayerID::P1);
-        boom->setCallback([&]{mp+=50;});
+        boom->setCallback([&]{mp+=attackEx_mp_reward;});
+        boom->setDamage(Ex_damage);
         bullet_list.push_back(boom);
     }
 };

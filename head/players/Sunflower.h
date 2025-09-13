@@ -22,8 +22,8 @@ extern Player* player_2;
 class Sunflower : public Player
 {
 	Animation animation_sun_text;
-	const Vector2 velocity_sun = {0.25f, -0.5f};
-	const float speed_sun_ex = 0.15f;
+	const Vector2 velocity_sun = Config::getInstance()->getVector2("player.sunflower.bullet.velocity");
+	const float speed_sun_ex = Config::getInstance()->getFloat("player.sunflower.bulletEx.speed");
 	bool is_sun_text_visible = false;
 public:
 	Sunflower(bool facing_right = true) : Player(facing_right)
@@ -67,9 +67,11 @@ public:
 				is_sun_text_visible=false;
 		});
 		statusBar->setAvatar(&img_avatar_sunflower);
-		size.x = 96;
-		size.y = 96;
-		attack_cd = 250;
+		attack_cd = Config::getInstance()->getInt("player.sunflower.attack_cd");
+		attack_mp_reward = Config::getInstance()->getInt("player.sunflower.attack.mp_reward");
+		attackEx_mp_reward = Config::getInstance()->getInt("player.sunflower.attackEx.mp_reward");
+		damage = Config::getInstance()->getInt("player.sunflower.damage");
+		Ex_damage = Config::getInstance()->getInt("player.sunflower.Exdamage");
         timer_attack_cd.setWaitTime(attack_cd);
 	}
 	~Sunflower() = default;
@@ -86,7 +88,8 @@ public:
 		bullet->setPosition(bullet_position);
 		bullet->setVelocity({is_facing_right?velocity_sun.x:-velocity_sun.x, velocity_sun.y});
 		bullet->setCollideTarget(id==PlayerID::P1?PlayerID::P2:PlayerID::P1);
-		bullet->setCallback([&] { mp+=35; });
+		bullet->setCallback([&] { mp+=attack_mp_reward; });
+		bullet->setDamage(damage);
 		bullet_list.push_back(bullet);
 	}
 
@@ -113,7 +116,8 @@ public:
 		bullet->setPosition(bullet_position);
 		bullet->setVelocity({0, -velocity_sun.y});
 		bullet->setCollideTarget(id==PlayerID::P1?PlayerID::P2:PlayerID::P1);
-		bullet->setCallback([&] { mp+=50; });
+		bullet->setCallback([&] { mp+=attackEx_mp_reward; });
+		bullet->setDamage(Ex_damage);
 		bullet_list.push_back(bullet);
 	}
 
@@ -123,7 +127,7 @@ public:
 		if(is_sun_text_visible)animation_sun_text.update(delta);
 	}
 	
-	void draw(const Camera& camera){
+	void draw(const Camera& camera)override{
 		Player::draw(camera);
 		if(is_sun_text_visible){
 			Vector2 text_position;

@@ -1,6 +1,4 @@
-#ifndef _PEASHOER_PLAYER_H_
-#define _PEASHOOTER_PLAYER_H_
-
+#pragma once
 #include "../Timer.h"
 #include "Player.h"
 #include "../Camera.h"
@@ -59,9 +57,9 @@ public:
 		timer_spawn_pea_ex.set_callback([&](){ spawn_pea_bullet(speed_pea_ex); });
 
 		statusBar->setAvatar(&img_avatar_peashooter);
-		size.x = 96;
-		size.y = 96;
-		attack_cd = 100;
+		attack_cd = Config::getInstance()->getInt("player.peashooter.attack_cd");
+		attack_mp_reward = Config::getInstance()->getInt("player.peashooter.attack.mp_reward");
+		damage = Config::getInstance()->getInt("player.peashooter.damage");
         timer_attack_cd.setWaitTime(attack_cd);
 	}
 	~Peashooter() = default;
@@ -96,9 +94,9 @@ public:
 	}
 
 private:
-	const float speed_pea = 0.75f;
-	const float speed_pea_ex = 1.5f;
-	const int attack_ex_duration = 2500;
+	const float speed_pea = Config::getInstance()->getFloat("player.peashooter.pea.speed");
+	const float speed_pea_ex = Config::getInstance()->getFloat("player.peashooter.peaEx.speed");
+	const int attack_ex_duration = Config::getInstance()->getInt("player.peashooter.peaEx.duration");
 	void spawn_pea_bullet(float speed)
 	{
 		Bullet *bullet = new PeaBullet();
@@ -112,11 +110,10 @@ private:
 
 		bullet->setPosition(bullet_position);
 		bullet->setVelocity(bullet_velocity);
+		bullet->setDamage(damage);
 
 		bullet->setCollideTarget(id == PlayerID::P1 ? PlayerID::P2 : PlayerID::P1);
-		bullet->setCallback([&](){mp+=25;});
+		bullet->setCallback([&](){mp+=attack_mp_reward;});
 		bullet_list.push_back(bullet);
 	}
 };
-
-#endif // _PEASHOOTER_PLAYER_H_

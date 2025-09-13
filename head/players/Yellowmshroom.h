@@ -47,9 +47,11 @@ public:
         animation_die_left.setLoop(false);
         animation_die_right.setLoop(false);
         statusBar->setAvatar(&img_avatar_yellowmshroom);
-        size.x=96;
-        size.y=96;
-        attack_cd=1500;
+        attack_cd=Config::getInstance()->getInt("player.yellowmshroom.attack_cd");
+        attack_mp_reward=Config::getInstance()->getInt("player.yellowmshroom.attack.mp_reward");
+        attackEx_mp_reward=Config::getInstance()->getInt("player.yellowmshroom.attackEx.mp_reward");
+        damage=Config::getInstance()->getInt("player.yellowmshroom.damage");
+        Ex_damage=Config::getInstance()->getInt("player.yellowmshroom.Exdamage");
         timer_attack_cd.setWaitTime(attack_cd);
     }
     ~Yellowmshroom()=default;
@@ -63,7 +65,8 @@ public:
         bullet->setPosition(bullet_position);
         bullet->setVelocity({0,0});
         bullet->setCollideTarget(id==PlayerID::P1?PlayerID::P2:PlayerID::P1);
-        bullet->setCallback([&]{mp+=15;});
+        bullet->setCallback([&]{mp+=attack_mp_reward;});
+        bullet->setDamage(damage);
         bullet_list.push_back(bullet);
         for(int i=0;i<8;i++){
             if(rand()%10!=0)continue;
@@ -88,7 +91,8 @@ public:
         bullet->setPosition(bullet_position);
         bullet->setVelocity((target_pos-bullet_position).normalized()*0.5f);
         bullet->setCollideTarget(id==PlayerID::P1?PlayerID::P2:PlayerID::P1);
-        bullet->setCallback([&]{mp+=30;});
+        bullet->setCallback([&]{mp+=attackEx_mp_reward;});
+        bullet->setDamage(Ex_damage);
         bullet_list.push_back(bullet);
     }
 };

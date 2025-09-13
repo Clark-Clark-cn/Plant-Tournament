@@ -28,7 +28,7 @@ public:
         mciSendString(command.c_str(), nullptr, 0, nullptr);
         velocity=Vector2(0,0);
         Vector2 player_position,player_size;
-        if(targetID==PlayerID::P2){
+        if(collideTarget==PlayerID::P1){
             player_position=player_1->getPosition();
             player_size=player_1->getSize();
         }

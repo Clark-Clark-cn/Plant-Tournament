@@ -5,6 +5,7 @@
 #include "../Vector2.h"
 #include "../platform.h"
 #include "../Particle.h"
+#include "../Config.h"
 #include "player_id.h"
 
 #include <Windows.h>
@@ -104,17 +105,23 @@ public:
 		return size;
 	}
 protected:
-	const float gravity = 1.6e-3f;
-	const float run_velocity = 0.55f;
-	const float jump_velocity = -0.85f;
-
+	const float gravity=Config::getInstance()->getFloat("player.gravity");
+	const float run_velocity=Config::getInstance()->getFloat("player.run_velocity");
+	const float jump_velocity=Config::getInstance()->getFloat("player.jump_velocity");
 protected:
 	float mp = 0;
-	float hp = 100.0f;
-	int attack_cd = 500;
+	float hp=Config::getInstance()->getFloat("player.max_hp");
+	float max_hp=Config::getInstance()->getFloat("player.max_hp");
+	float hurry_multiplier=Config::getInstance()->getFloat("player.multiplier.hurrying");
+	float recover_multiplier=Config::getInstance()->getFloat("player.multiplier.recovery");
+	int attack_cd=Config::getInstance()->getInt("player.default.attack_cd");
+	int damage=Config::getInstance()->getInt("player.default.damage");
+	int Ex_damage=Config::getInstance()->getInt("player.default.Exdamage");
+	int attack_mp_reward=Config::getInstance()->getInt("player.default.attack.mp_reward");
+	int attackEx_mp_reward=Config::getInstance()->getInt("player.default.attackEx.mp_reward");
 	IMAGE img_sketch;
 	PlayerID id = PlayerID::P1;
-	Vector2 size;
+	Vector2 size=Config::getInstance()->getVector2("player.size");
 	Vector2 position;
 	Vector2 velocity;
 	Vector2 position_jump_effect;

@@ -45,7 +45,7 @@ class game : public Screen
     Timer timer_winner_slide_out;
     bool is_slide_out_started=false;
     int speed_winner_bar=3;
-    int speed_winner_text=1.5;
+    int speed_winner_text=2;
 public:
     game(){}
     ~game(){}
@@ -71,55 +71,7 @@ public:
             screenManager.switchTo(ScreenManager::ScreenType::MainMenu);
         });
         platform_list.clear();
-        platform_list.resize(6);
-        Platform& ground = platform_list[0];
-        ground.image=&img_platform_large;
-        ground.render_pos.x=122;
-        ground.render_pos.y=455;
-        ground.shape = {(float)ground.render_pos.x+30, 
-            (float)ground.render_pos.x+img_platform_large.getwidth()-30,
-            (float)ground.render_pos.y+60
-        };
-        Platform& platform1 = platform_list[1];
-        platform1.image = &img_platform_small;
-        platform1.render_pos = {200, 300};
-        platform1.shape = {
-            (float)platform1.render_pos.x+40,
-            (float)platform1.render_pos.x + img_platform_small.getwidth()-40,
-            (float)platform1.render_pos.y + img_platform_small.getheight()/2
-        };
-        Platform& platform2 = platform_list[2];
-        platform2.image = &img_platform_small;
-        platform2.render_pos = {400, 200};
-        platform2.shape = {
-            (float)platform2.render_pos.x+40,
-            (float)platform2.render_pos.x + img_platform_small.getwidth()-40,
-            (float)platform2.render_pos.y + img_platform_small.getheight()/2
-        };
-        Platform& platform3 = platform_list[3];
-        platform3.image = &img_platform_small;
-        platform3.render_pos = {600, 100};
-        platform3.shape = {
-            (float)platform3.render_pos.x+40,
-            (float)platform3.render_pos.x + img_platform_small.getwidth()-40,
-            (float)platform3.render_pos.y + img_platform_small.getheight()/2
-        };
-        Platform& platform4 = platform_list[4];
-        platform4.image = &img_platform_small;
-        platform4.render_pos = {800, 200};
-        platform4.shape = {
-            (float)platform4.render_pos.x+40,
-            (float)platform4.render_pos.x + img_platform_small.getwidth()-40,
-            (float)platform4.render_pos.y + img_platform_small.getheight()/2
-        };
-        Platform& platform5 = platform_list[5];
-        platform5.image = &img_platform_small;
-        platform5.render_pos = {1000, 300};
-        platform5.shape = {
-            (float)platform5.render_pos.x+40,
-            (float)platform5.render_pos.x + img_platform_small.getwidth()-40,
-            (float)platform5.render_pos.y + img_platform_small.getheight()/2
-        };
+        platform_list=Config::getInstance()->getPlatforms();
         player_1->set_position(200, 50);
         player_2->set_position(975, 50);
     }

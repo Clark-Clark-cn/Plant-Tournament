@@ -63,8 +63,8 @@ public:
     }
     void collide() override{
         mciSendString(L"play butter from 0", NULL, 0, NULL);
-        if(targetID==PlayerID::P1)player_2->set_buttered(true);
-        else if(targetID==PlayerID::P2)player_1->set_buttered(true);
+        if(collideTarget==PlayerID::P2)player_2->set_buttered(true);
+        else player_1->set_buttered(true);
         isValid=false;
         canRemove=true;
     }

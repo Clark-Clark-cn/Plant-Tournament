@@ -51,9 +51,11 @@ public:
             is_attacking_ex=false;
         });
         statusBar->setAvatar(&img_avatar_gloomshroom);
-        size.x=96;
-        size.y=96;
-        attack_cd=700;
+        attack_cd=Config::getInstance()->getInt("player.gloomshroom.attack_cd");
+        attack_mp_reward=Config::getInstance()->getInt("player.gloomshroom.attack.mp_reward");
+        attackEx_mp_reward=Config::getInstance()->getInt("player.gloomshroom.attackEx.mp_reward");
+        damage=Config::getInstance()->getInt("player.gloomshroom.damage");
+        Ex_damage=Config::getInstance()->getInt("player.gloomshroom.Exdamage");
         timer_attack_cd.setWaitTime(attack_cd);
     }
     ~Gloomshroom()=default;
@@ -67,7 +69,8 @@ public:
         bullet->setPosition(bullet_position);
         bullet->setVelocity({0,0});
         bullet->setCollideTarget(id==PlayerID::P1?PlayerID::P2:PlayerID::P1);
-        bullet->setCallback([&]{mp+=35;});
+        bullet->setCallback([&]{mp+=attack_mp_reward;});
+        bullet->setDamage(damage);
         bullet_list.push_back(bullet);
     }
     void attackEx() override{
@@ -80,7 +83,8 @@ public:
         bullet->setPosition(bullet_position);
         bullet->setVelocity({0,0});
         bullet->setCollideTarget(id==PlayerID::P1?PlayerID::P2:PlayerID::P1);
-        bullet->setCallback([&]{mp+=10;});
+        bullet->setCallback([&]{mp+=attackEx_mp_reward;});
+        bullet->setDamage(Ex_damage);
         bullet_list.push_back(bullet);
     }
     void update(int delta) override{

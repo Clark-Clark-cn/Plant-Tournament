@@ -1,6 +1,7 @@
 #include "head/players/Player.h"
 #include "head/StatusBar.h"
 #include "head/bullets/efforts.h"
+#include "head/Config.h"
 
 extern IMAGE img_1p_cursor;
 extern IMAGE img_2p_cursor;
@@ -42,7 +43,7 @@ Player::Player(bool facing_right)
 
     current_animation = is_facing_right ? &animation_idle_right : &animation_idle_left;
 
-    timer_invulnerable.setWaitTime(750);
+    timer_invulnerable.setWaitTime(Config::getInstance()->getInt("player.timer.invulnerable"));
     timer_invulnerable.setOneShot(true);
     timer_invulnerable.set_callback([&]()
         {
@@ -57,7 +58,7 @@ Player::Player(bool facing_right)
         }
     );
 
-    timer_cursor_visibility.setWaitTime(2500);
+    timer_cursor_visibility.setWaitTime(Config::getInstance()->getInt("player.timer.cursor_visibility"));
     timer_cursor_visibility.setOneShot(true);
     timer_cursor_visibility.set_callback([&]()
         {
@@ -93,35 +94,35 @@ Player::Player(bool facing_right)
             can_attack = true;
         }
     );
-    timer_butter.setWaitTime(3000);
+    timer_butter.setWaitTime(Config::getInstance()->getInt("player.timer.buttered"));
     timer_butter.setOneShot(true);
     timer_butter.set_callback([&]()
         {
             is_buttered = false;
         }
     );
-    timer_silence.setWaitTime(1000);
+    timer_silence.setWaitTime(Config::getInstance()->getInt("player.timer.silenced"));
     timer_silence.setOneShot(true);
     timer_silence.set_callback([&]()
         {
             is_silenced = false;
         }
     );
-    timer_recover.setWaitTime(5000);
+    timer_recover.setWaitTime(Config::getInstance()->getInt("player.timer.recovering"));
     timer_recover.setOneShot(true);
     timer_recover.set_callback([&]()
         {
             is_recovering = false;
         }
     );
-    timer_hurry.setWaitTime(5000);
+    timer_hurry.setWaitTime(Config::getInstance()->getInt("player.timer.hurrying"));
     timer_hurry.setOneShot(true);
     timer_hurry.set_callback([&]()
         {
             is_hurrying = false;
         }
     );
-    timer_invisible.setWaitTime(5000);
+    timer_invisible.setWaitTime(Config::getInstance()->getInt("player.timer.invisible"));
     timer_invisible.setOneShot(true);
     timer_invisible.set_callback([&]()
         {
@@ -142,7 +143,7 @@ void Player::update(int delta)
             current_animation = is_facing_right ? &animation_run_right : &animation_run_left;
             int delta_run=0;
             if(!is_hurrying)delta_run=direction * run_velocity * delta;
-            else delta_run=direction * run_velocity * 1.5f * delta;
+            else delta_run=direction * run_velocity * delta * hurry_multiplier;
             on_run(delta_run);
         }
     }
@@ -200,7 +201,7 @@ void Player::update(int delta)
     if(position.y>getwidth())hp=0;
     randomSummonEffortBullets();
 
-    if(is_recovering&&hp<100)hp+=0.02f*delta;
+    if(is_recovering&&hp<max_hp)hp+=recover_multiplier*delta;
 
     if(is_silenced)timer_silence.update(delta);
     if(is_recovering)timer_recover.update(delta);
@@ -265,68 +266,59 @@ void Player::input(const ExMessage& msg){
         return;
     if(is_buttered)
         return;
-
+    static const int p1_left_key=Config::getInstance()->getInt("player.key.p1.left");
+    static const int p1_right_key=Config::getInstance()->getInt("player.key.p1.right");
+    static const int p1_jump_key=Config::getInstance()->getInt("player.key.p1.jump");
+    static const int p1_attack_key=Config::getInstance()->getInt("player.key.p1.attack");
+    static const int p1_attackEx_key=Config::getInstance()->getInt("player.key.p1.attackEx");
+    static const int p2_left_key=Config::getInstance()->getInt("player.key.p2.left");
+    static const int p2_right_key=Config::getInstance()->getInt("player.key.p2.right");
+    static const int p2_jump_key=Config::getInstance()->getInt("player.key.p2.jump");
+    static const int p2_attack_key=Config::getInstance()->getInt("player.key.p2.attack");
+    static const int p2_attackEx_key=Config::getInstance()->getInt("player.key.p2.attackEx");
     switch (msg.message)
     {
     case WM_KEYDOWN:
         switch (id)
         {
         case PlayerID::P1:
-            switch (msg.vkcode)
-            {
-            case 'A':
-                is_left_key_down = true;
-                break;
-            case 'D':
-                is_right_key_down = true;
-                break;
-            case 'W':
-                on_jump();
-                break;
-            case 'F':
+            if(msg.vkcode==p1_left_key)is_left_key_down = true;
+            else if(msg.vkcode==p1_right_key)is_right_key_down = true;
+            else if(msg.vkcode==p1_jump_key)on_jump();
+            else if(msg.vkcode==p1_attack_key){
                 if (can_attack&&!is_silenced)
                 {
                     attack();
                     can_attack = false;
                     timer_attack_cd.restart();
                 }
-                break;
-            case 'G':
+            }
+            else if(msg.vkcode==p1_attackEx_key){
                 if (mp >= 100)
                 {
                     attackEx();
                     mp = 0;
                 }
-                break;
             }
             break;
         case PlayerID::P2:
-            switch (msg.vkcode)
-            {
-            case VK_LEFT:
-                is_left_key_down = true;
-                break;
-            case VK_RIGHT:
-                is_right_key_down = true;
-                break;
-            case VK_UP:
-                on_jump();
-                break;
-            case VK_OEM_PERIOD:
-                if (can_attack && !is_silenced)
+            if(msg.vkcode==p2_left_key)is_left_key_down = true;
+            else if(msg.vkcode==p2_right_key)is_right_key_down = true;
+            else if(msg.vkcode==p2_jump_key)on_jump();
+            else if(msg.vkcode==p2_attack_key){
+                if (can_attack&&!is_silenced)
                 {
                     attack();
                     can_attack = false;
                     timer_attack_cd.restart();
                 }
-                break;
-            case VK_OEM_2:
+            }
+            else if(msg.vkcode==p2_attackEx_key){
                 if (mp >= 100)
                 {
                     attackEx();
                     mp = 0;
                 }
-                break;
             }
             break;
         }
@@ -335,26 +327,12 @@ void Player::input(const ExMessage& msg){
         switch (id)
         {
         case PlayerID::P1:
-            switch (msg.vkcode)
-            {
-            case 'A':
-                is_left_key_down = false;
-                break;
-            case 'D':
-                is_right_key_down = false;
-                break;
-            }
+            if(msg.vkcode==p1_left_key)is_left_key_down = false;
+            else if(msg.vkcode==p1_right_key)is_right_key_down = false;
             break;
         case PlayerID::P2:
-            switch (msg.vkcode)
-            {
-            case VK_LEFT:
-                is_left_key_down = false;
-                break;
-            case VK_RIGHT:
-                is_right_key_down = false;
-                break;
-            }
+            if(msg.vkcode==p2_left_key)is_left_key_down = false;
+            else if(msg.vkcode==p2_right_key)is_right_key_down = false;
             break;
         }
         break;
@@ -472,7 +450,7 @@ void Player::on_jump()
 
 void Player::randomSummonEffortBullets()
 {
-    if (rand() % 100 == 0)
+    if (rand() % Config::getInstance()->getInt("player.multiplier.effort") == 0)
     {
         effort_bullets.push_back(new EffortBullet());
     }

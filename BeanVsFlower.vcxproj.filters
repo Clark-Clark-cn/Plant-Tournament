@@ -24,6 +24,9 @@
     <ClCompile Include="Base.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="head\Animation.h">
@@ -120,6 +123,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="head\players\Yellowmshroom.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="head\Config.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

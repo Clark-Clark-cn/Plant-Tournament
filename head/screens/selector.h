@@ -215,6 +215,7 @@ public:
 			pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone_right.getwidth() - textwidth(str_yellowmshroom_name)) / 2;
 			outtextxy_shaded(pos_img_1P_name.x, pos_img_1P_name.y, str_yellowmshroom_name);
 			break;
+		default:break;
 		}
 
 		switch (player_type_2)
@@ -244,6 +245,7 @@ public:
 			pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone_left.getwidth() - textwidth(str_yellowmshroom_name)) / 2;
 			outtextxy_shaded(pos_img_2P_name.x, pos_img_2P_name.y, str_yellowmshroom_name);
 			break;
+		default:break;
 		}
 
 		putImage(pos_1P_selector_btn_left.x, pos_1P_selector_btn_left.y, is_btn_1P_left_down ? 
@@ -337,6 +339,7 @@ public:
 			player_1 = new Yellowmshroom();
 			img_player1_avatar = &img_avatar_yellowmshroom;
 			break;
+		default:break;
 		}
 		player_1->set_id(PlayerID::P1);
 
@@ -362,6 +365,7 @@ public:
 			player_2 = new Yellowmshroom(false);
 			img_player2_avatar = &img_avatar_yellowmshroom;
 			break;
+		default:break;
 		}
 		player_2->set_id(PlayerID::P2);
 
