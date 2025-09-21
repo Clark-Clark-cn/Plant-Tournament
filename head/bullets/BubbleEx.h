@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Bullet.h"
-#include "../Camera.h"
-#include "../players/Player.h"
+#include "baseItem/Camera.h"
+#include "players/Player.h"
 
 extern Atlas atlas_bubble_ex;
 
@@ -26,7 +26,7 @@ public:
         life_timer.restart();
     }
     ~BubbleEx()=default;
-    void update(int delta)override{
+    void update(float delta)override{
         animation_bubble_ex.update(delta);
         life_timer.update(delta);
         if(isValid){

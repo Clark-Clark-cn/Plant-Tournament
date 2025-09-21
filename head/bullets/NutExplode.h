@@ -20,7 +20,7 @@ public:
         });
     }
     ~NutExplode()=default;
-    void update(int delta)override{
+    void update(float delta)override{
         Bullet::update(delta);
         animation_explode.update(delta);
         if(checkIfExceedsScreen())canRemove=true;

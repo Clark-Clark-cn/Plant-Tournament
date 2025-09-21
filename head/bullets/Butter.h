@@ -7,6 +7,8 @@ extern IMAGE img_butter;
 extern Player* player_1;
 extern Player* player_2;
 
+extern Audio butter;
+
 class Butter:public Bullet
 {
     const float speed=0.5f;
@@ -17,10 +19,10 @@ public:
         right,
         up,
         down,
-        up_left,
-        up_right,
-        down_left,
-        down_right
+        upLeft,
+        upRight,
+        downLeft,
+        downRight
     };
     Butter(Direction dir=Direction::right):Bullet()
     {
@@ -37,32 +39,32 @@ public:
             case Direction::down:
                 velocity=Vector2(0,speed);
                 break;
-            case Direction::up_left:
+            case Direction::upLeft:
                 velocity=Vector2(-speed_diagonal,-speed_diagonal);
                 break;
-            case Direction::up_right:
+            case Direction::upRight:
                 velocity=Vector2(speed_diagonal,-speed_diagonal);
                 break;
-            case Direction::down_left:
+            case Direction::downLeft:
                 velocity=Vector2(-speed_diagonal,speed_diagonal);
                 break;
-            case Direction::down_right:
+            case Direction::downRight:
                 velocity=Vector2(speed_diagonal,speed_diagonal);
                 break;
         }
         size=Vector2(50,50);
     }
     ~Butter()=default;
-    void update(int delta) override {
+    void update(float delta) override {
         position+=velocity*(float)delta;
         if(!isValid)canRemove=true;
         if(checkIfExceedsScreen())canRemove=true;
     }
     void draw(const Camera& camera) const override{
-        putImage(camera,position.x,position.y,&img_butter);
+        camera.draw(position, &img_butter);
     }
     void collide() override{
-        mciSendString(L"play butter from 0", NULL, 0, NULL);
+        butter.play();
         if(collideTarget==PlayerID::P2)player_2->set_buttered(true);
         else player_1->set_buttered(true);
         isValid=false;

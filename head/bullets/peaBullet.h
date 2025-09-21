@@ -5,6 +5,7 @@
 extern IMAGE img_pea;
 extern Atlas atlas_pea_break;
 
+extern Audio pea_break[3];
 class PeaBullet : public Bullet
 {
 public:
@@ -18,19 +19,20 @@ public:
     }
     ~PeaBullet() = default;
     virtual void collide()override{
-        std::wstring command=L"play pea_break_"+std::to_wstring(rand()%3)+L"from 0";
-        mciSendString(command.c_str(), nullptr, 0, nullptr);
+        pea_break[rand()%3].play();
         Bullet::collide();
     }
 
-    void update(int delta) override {
+    void update(float delta) override {
         position+=velocity*(float)delta;
         if(!isValid)animation_break.update(delta);
         if(checkIfExceedsScreen())canRemove=true;
     }
 
     void draw(const Camera& camera) const override{
-        if(isValid)putImage(camera,position.x,position.y,&img_pea);
+        if(isValid){
+            camera.draw(position, &img_pea);
+        }
         else animation_break.draw(camera,position.x,position.y);
     }
 private:

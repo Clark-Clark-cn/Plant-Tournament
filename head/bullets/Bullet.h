@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../Camera.h"
-#include "../Vector2.h"
-#include "../Animation.h"
-#include "../players/player_id.h"
+#include "baseItem/Camera.h"
+#include "baseItem/Vector2.h"
+#include "baseItem/Animation.h"
+#include "players/player_id.h"
 
 #include <functional>
 
@@ -63,19 +63,17 @@ public:
         }
     }
     virtual bool checkCollision(const Vector2& otherPos, const Vector2& otherSize) {
-        return (max(position.x + size.x, otherPos.x + otherSize.x) - min(position.x, otherPos.x))
+        return (std::max(position.x + size.x, otherPos.x + otherSize.x) - std::min(position.x, otherPos.x))
                <= size.x + otherSize.x &&
-               (max(position.y + size.y, otherPos.y + otherSize.y) - min(position.y, otherPos.y))
+               (std::max(position.y + size.y, otherPos.y + otherSize.y) - std::min(position.y, otherPos.y))
                <= size.y + otherSize.y;
     }
-    virtual void update(int delta) {}
+    virtual void update(float delta) {}
     virtual void draw(const Camera& camera) const {
         if(is_debug){
-            setfillcolor(RGB(255,255,255));
-            setlinecolor(RGB(255,255,255));
-            rectangle((int)(position.x), (int)(position.y),
-                      (int)(position.x + size.x), (int)(position.y + size.y));
-            solidcircle((int)(position.x + size.x / 2), (int)(position.y + size.y / 2), 5);
+            camera.setColor(Color{255,255,255,255});
+            camera.rect({(int)position.x, (int)position.y, (int)size.x, (int)size.y});
+            camera.circle(Vector2{position.x + size.x / 2, position.y + size.y / 2}, 5,true);
         }
     }
 protected:
@@ -90,7 +88,7 @@ protected:
     std::function<void()> callback=nullptr;
 
     bool checkIfExceedsScreen() const {
-        return position.x + size.x < 0 || position.x >= getwidth() ||
-               position.y + size.y < 0 || position.y >= getheight();
+        return position.x + size.x < -1000 || position.x >= (WINDOW_WIDTH+1000) ||
+               position.y + size.y < -1000 || position.y >= (WINDOW_HEIGHT+1000);
     }
 };

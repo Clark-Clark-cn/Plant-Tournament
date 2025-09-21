@@ -1,22 +1,20 @@
 #pragma once
-#include "../Timer.h"
+#include "baseItem/Timer.h"
 #include "Player.h"
-#include "../Camera.h"
-#include "../bullets/peaBullet.h"
-#include "../StatusBar.h"
+#include "baseItem/Camera.h"
+#include "bullets/peaBullet.h"
+#include "StatusBar.h"
 
-extern Atlas atlas_peashooter_idle_left;
-extern Atlas atlas_peashooter_idle_right;
-extern Atlas atlas_peashooter_run_left;
-extern Atlas atlas_peashooter_run_right;
-extern Atlas atlas_peashooter_attack_ex_left;
-extern Atlas atlas_peashooter_attack_ex_right;
-extern Atlas atlas_peashooter_die_left;
-extern Atlas atlas_peashooter_die_right;
+extern Atlas atlas_peashooter_idle;
+extern Atlas atlas_peashooter_run;
+extern Atlas atlas_peashooter_attack_ex;
+extern Atlas atlas_peashooter_die;
 extern IMAGE img_avatar_peashooter;
 
 extern Camera camera;
 
+extern Audio pea_shoot[2];
+extern Audio pea_shoot_ex;
 class Peashooter : public Player
 {
 	Timer timer_attack_ex;
@@ -25,30 +23,19 @@ class Peashooter : public Player
 public:
 	Peashooter(bool facing_right = true) : Player(facing_right)
 	{
-		animation_idle_left.setAtlas(&atlas_peashooter_idle_left);
-		animation_idle_right.setAtlas(&atlas_peashooter_idle_right);
-		animation_run_left.setAtlas(&atlas_peashooter_run_left);
-		animation_run_right.setAtlas(&atlas_peashooter_run_right);
-		animation_attack_ex_left.setAtlas(&atlas_peashooter_attack_ex_left);
-		animation_attack_ex_right.setAtlas(&atlas_peashooter_attack_ex_right);
-		animation_die_left.setAtlas(&atlas_peashooter_die_left);
-		animation_die_right.setAtlas(&atlas_peashooter_die_right);
+		animation_idle.setAtlas(&atlas_peashooter_idle);
+		animation_run.setAtlas(&atlas_peashooter_run);
+		animation_attack_ex.setAtlas(&atlas_peashooter_attack_ex);
+		animation_die.setAtlas(&atlas_peashooter_die);
 
-		animation_idle_left.setInterval(75);
-		animation_idle_right.setInterval(75);
-		animation_run_left.setInterval(75);
-		animation_run_right.setInterval(75);
-		animation_attack_ex_left.setInterval(75);
-		animation_attack_ex_right.setInterval(75);
-		animation_die_left.setInterval(75);
-		animation_die_right.setInterval(75);
+		animation_idle.setInterval(75);
+		animation_run.setInterval(75);
+		animation_attack_ex.setInterval(75);
+		animation_die.setInterval(75);
 
-		animation_idle_left.setLoop(true);
-		animation_idle_right.setLoop(true);
-		animation_run_left.setLoop(true);
-		animation_run_right.setLoop(true);
-		animation_die_left.setLoop(false);
-		animation_die_right.setLoop(false);
+		animation_idle.setLoop(true);
+		animation_run.setLoop(true);
+		animation_die.setLoop(false);
 
 		timer_attack_ex.setWaitTime(attack_ex_duration);
 		timer_attack_ex.setOneShot(true);
@@ -56,7 +43,7 @@ public:
 		timer_spawn_pea_ex.setWaitTime(100);
 		timer_spawn_pea_ex.set_callback([&](){ spawn_pea_bullet(speed_pea_ex); });
 
-		statusBar->setAvatar(&img_avatar_peashooter);
+		statusBar->setAvatar(img_avatar_peashooter);
 		attack_cd = Config::getInstance()->getInt("player.peashooter.attack_cd");
 		attack_mp_reward = Config::getInstance()->getInt("player.peashooter.attack.mp_reward");
 		damage = Config::getInstance()->getInt("player.peashooter.damage");
@@ -66,22 +53,20 @@ public:
 
 	void attack() override
 	{
-		std::wstring cmd=L"play pea_shoot_"+std::to_wstring(rand() % 2) + L" from 0";
-		mciSendString(cmd.c_str(), NULL, 0, NULL);
-
+		pea_shoot[rand() % 2].play();
 		spawn_pea_bullet(speed_pea);
 	}
 
 	void attackEx() override
 	{
-		mciSendString(_T("play pea_shoot_ex from 0"), NULL, 0, NULL);
+		pea_shoot_ex.play();
 		is_attacking_ex = true;
 		timer_attack_ex.restart();
 
-		is_facing_right ? animation_attack_ex_right.reset() : animation_attack_ex_left.reset();
+		animation_attack_ex.reset();
 	}
 
-	void update(int delta) override
+	void update(float delta) override
 	{
 		Player::update(delta);
 

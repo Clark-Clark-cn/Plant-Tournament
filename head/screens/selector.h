@@ -1,45 +1,38 @@
 #pragma once
 #include "screen.h"
 #include "manager.h"
-#include "../players/Player.h"
-#include "../players/Peashooter.h"
-#include "../players/Sunflower.h"
-#include "../players/Gloomshroom.h"
-#include "../players/Yellowmshroom.h"
-#include "../players/Nut.h"
-#include "../Animation.h"
-#include <graphics.h>
+#include "players/Player.h"
+#include "players/Peashooter.h"
+#include "players/Sunflower.h"
+#include "players/Gloomshroom.h"
+#include "players/buttermshroom.h"
+#include "players/Nut.h"
+#include "baseItem/Animation.h"
 
+extern Camera camera;
 
 extern IMAGE img_VS;
 extern IMAGE img_1P;
 extern IMAGE img_2P;
 extern IMAGE img_1p_desc;
 extern IMAGE img_2p_desc;
-extern IMAGE img_gravestone_left;
-extern IMAGE img_gravestone_right;
+extern IMAGE img_gravestone;
 extern IMAGE img_selector_tip;
 extern IMAGE img_selector_bg;
-extern IMAGE img_1p_selector_btn_idle_left;
-extern IMAGE img_1p_selector_btn_idle_right;
-extern IMAGE img_1p_selector_btn_down_left;
-extern IMAGE img_1p_selector_btn_down_right;
-extern IMAGE img_2p_selector_btn_idle_left;
-extern IMAGE img_2p_selector_btn_idle_right;
-extern IMAGE img_2p_selector_btn_down_left;
-extern IMAGE img_2p_selector_btn_down_right;
-extern IMAGE img_peashooter_selector_bg_left;
-extern IMAGE img_peashooter_selector_bg_right;
-extern IMAGE img_sunflower_selector_bg_left;
-extern IMAGE img_sunflower_selector_bg_right;
+extern IMAGE img_1p_selector_btn_idle;
+extern IMAGE img_1p_selector_btn_down;
+extern IMAGE img_2p_selector_btn_idle;
+extern IMAGE img_2p_selector_btn_down;
+extern IMAGE img_peashooter_selector_bg;
+extern IMAGE img_sunflower_selector_bg;
 
-extern Atlas atlas_peashooter_idle_right;
-extern Atlas atlas_sunflower_idle_right;
+extern Atlas atlas_peashooter_idle;
+extern Atlas atlas_sunflower_idle;
 
 extern IMAGE img_avatar_peashooter;
 extern IMAGE img_avatar_sunflower;
 extern IMAGE img_avatar_gloomshroom;
-extern IMAGE img_avatar_yellowmshroom;
+extern IMAGE img_avatar_buttermshroom;
 extern IMAGE img_avatar_nut;
 
 extern ScreenManager screenManager;
@@ -48,8 +41,16 @@ extern Player* player_1;
 extern Player* player_2;
 extern IMAGE* img_player1_avatar;
 extern IMAGE* img_player2_avatar;
+
+extern Audio ui_confirm;
+extern Audio ui_switch;
+extern Audio bgm_menu;
+
+extern Font font_main;
+
 class selector:public Screen
 {
+    std::vector<std::shared_ptr<Button>> buttons;
 public:
 	selector()=default;
 	~selector()=default;
@@ -58,69 +59,136 @@ public:
 	{
 		static const int OFFSET_X = 50;
 
-		animation_peashooter.setAtlas(&atlas_peashooter_idle_right);
+		animation_peashooter.setAtlas(&atlas_peashooter_idle);
 		animation_peashooter.setInterval(100);
 		animation_peashooter.setLoop(true);
 
-		animation_sunflower.setAtlas(&atlas_sunflower_idle_right);
+		animation_sunflower.setAtlas(&atlas_sunflower_idle);
 		animation_sunflower.setInterval(100);
 		animation_sunflower.setLoop(true);
 
-		animation_gloomshroom.setAtlas(&atlas_gloomshroom_idle_right);
+		animation_gloomshroom.setAtlas(&atlas_gloomshroom_idle);
 		animation_gloomshroom.setInterval(100);
 		animation_gloomshroom.setLoop(true);
 
-		animation_nut.setAtlas(&atlas_nut_idle_right);
+		animation_nut.setAtlas(&atlas_nut_idle);
 		animation_nut.setInterval(100);
 		animation_nut.setLoop(true);
 
-		animation_yellowmshroom.setAtlas(&atlas_yellowmshroom_idle_right);
-		animation_yellowmshroom.setInterval(100);
-		animation_yellowmshroom.setLoop(true);
+		animation_buttermshroom.setAtlas(&atlas_buttermshroom_idle);
+		animation_buttermshroom.setInterval(100);
+		animation_buttermshroom.setLoop(true);
 
-		pos_img_VS.x = (getwidth() - img_VS.getwidth()) / 2;
-		pos_img_VS.y = (getheight() - img_VS.getheight()) / 2;
-		pos_img_tip.x = (getwidth()-img_selector_tip.getwidth()) / 2;
-		pos_img_tip.y = getheight() - 125;
-		pos_img_1P.x = getwidth() / 2 - (getwidth() / 2 + img_1P.getwidth()) / 2 - OFFSET_X;
+		pos_img_VS.x = (WINDOW_WIDTH - img_VS.getWidth()) / 2;
+		pos_img_VS.y = (WINDOW_HEIGHT - img_VS.getHeight()) / 2;
+		pos_img_tip.x = (WINDOW_WIDTH-img_selector_tip.getWidth()) / 2;
+		pos_img_tip.y = WINDOW_HEIGHT - 125;
+		pos_img_1P.x = WINDOW_WIDTH / 2 - (WINDOW_WIDTH / 2 + img_1P.getWidth()) / 2 - OFFSET_X;
 		pos_img_1P.y = 35;
-		pos_img_2P.x = getwidth() / 2 + (getwidth() / 2 - img_2P.getwidth()) / 2 + OFFSET_X;
+		pos_img_2P.x = WINDOW_WIDTH / 2 + (WINDOW_WIDTH / 2 - img_2P.getWidth()) / 2 + OFFSET_X;
 		pos_img_2P.y = pos_img_1P.y;
-		pos_img_1P_desc.x = (getwidth() / 2 - img_1p_desc.getwidth())/ 2 - OFFSET_X;
-		pos_img_1P_desc.y = getheight() - 150;
-		pos_img_2P_desc.x = getwidth() / 2 + (getwidth() / 2 - img_2p_desc.getwidth()) / 2 + OFFSET_X;
+		pos_img_1P_desc.x = (WINDOW_WIDTH / 2 - img_1p_desc.getWidth())/ 2 - OFFSET_X;
+		pos_img_1P_desc.y = WINDOW_HEIGHT - 150;
+		pos_img_2P_desc.x = WINDOW_WIDTH / 2 + (WINDOW_WIDTH / 2 - img_2p_desc.getWidth()) / 2 + OFFSET_X;
 		pos_img_2P_desc.y = pos_img_1P_desc.y;
-		pos_img_1P_gravestone.x = (getwidth() / 2 - img_gravestone_right.getwidth()) / 2 - OFFSET_X;
-		pos_img_1P_gravestone.y = pos_img_1P.y + img_1P.getheight() + 35;
-		pos_img_2P_gravestone.x = getwidth() / 2 + (getwidth() / 2 - img_gravestone_left.getwidth()) / 2 + OFFSET_X;
+		pos_img_1P_gravestone.x = (WINDOW_WIDTH / 2 - img_gravestone.getWidth()) / 2 - OFFSET_X;
+		pos_img_1P_gravestone.y = pos_img_1P.y + img_1P.getHeight() + 35;
+		pos_img_2P_gravestone.x = WINDOW_WIDTH / 2 + (WINDOW_WIDTH / 2 - img_gravestone.getWidth()) / 2 + OFFSET_X;
 		pos_img_2P_gravestone.y = pos_img_1P_gravestone.y;
-		pos_animation_1P.x = (getwidth() / 2 - atlas_peashooter_idle_right.getImage(0)->getwidth()) / 2 - OFFSET_X;
+		pos_animation_1P.x = (WINDOW_WIDTH / 2 - atlas_peashooter_idle.getImage(0)->getWidth()) / 2 - OFFSET_X;
 		pos_animation_1P.y = pos_img_1P_gravestone.y + 80;
-		pos_animation_2P.x = getwidth() / 2 + (getwidth() / 2 - atlas_peashooter_idle_right.getImage(0)->getwidth()) / 2 + OFFSET_X;
+		pos_animation_2P.x = WINDOW_WIDTH / 2 + (WINDOW_WIDTH / 2 - atlas_peashooter_idle.getImage(0)->getWidth()) / 2 + OFFSET_X;
 		pos_animation_2P.y = pos_animation_1P.y;
 		pos_img_1P_name.y = pos_animation_1P.y + 155;
 		pos_img_2P_name.y = pos_img_1P_name.y;
-		pos_1P_selector_btn_left.x = pos_img_1P_gravestone.x - img_1p_selector_btn_idle_left.getwidth();
-		pos_1P_selector_btn_left.y = pos_img_1P_gravestone.y + (img_gravestone_right.getheight() - img_1p_selector_btn_idle_left.getheight()) / 2;
-		pos_1P_selector_btn_right.x = pos_img_1P_gravestone.x + img_gravestone_right.getwidth();
+		pos_1P_selector_btn_left.x = pos_img_1P_gravestone.x - img_1p_selector_btn_idle.getWidth();
+		pos_1P_selector_btn_left.y = pos_img_1P_gravestone.y + (img_gravestone.getHeight() - img_1p_selector_btn_idle.getHeight()) / 2;
+		pos_1P_selector_btn_right.x = pos_img_1P_gravestone.x + img_gravestone.getWidth();
 		pos_1P_selector_btn_right.y = pos_1P_selector_btn_left.y;
-		pos_2P_selector_btn_left.x = pos_img_2P_gravestone.x - img_2p_selector_btn_idle_left.getwidth();
+		pos_2P_selector_btn_left.x = pos_img_2P_gravestone.x - img_2p_selector_btn_idle.getWidth();
 		pos_2P_selector_btn_left.y = pos_1P_selector_btn_left.y;
-		pos_2P_selector_btn_right.x = pos_img_2P_gravestone.x + img_gravestone_left.getwidth();
+		pos_2P_selector_btn_right.x = pos_img_2P_gravestone.x + img_gravestone.getWidth();
 		pos_2P_selector_btn_right.y = pos_1P_selector_btn_left.y;
+		buttons.resize(5);
+		buttons[0] = std::make_shared<Button>();
+		buttons[0]->setPosition(pos_1P_selector_btn_left);
+		buttons[0]->addItem(&img_1p_selector_btn_idle, SDL_FLIP_HORIZONTAL, pos_1P_selector_btn_left, "idle");
+		buttons[0]->addItem(&img_1p_selector_btn_down, SDL_FLIP_HORIZONTAL, pos_1P_selector_btn_left, "down");
+		buttons[0]->setActiveRenderActionSet("idle");
+		buttons[0]->setCallback(Button::inputResult::Clicked, [this]() {
+			buttons[0]->setActiveRenderActionSet("down");
+			is_btn_1P_left_down=true;
+		});
+		buttons[0]->setCallback(Button::inputResult::Released, [this]() {
+			buttons[0]->setActiveRenderActionSet("idle");
+			is_btn_1P_left_down=false;
+			player_type_1 = (PlayerType)(((int)PlayerType::Invalid + (int)player_type_1 - 1) % (int)PlayerType::Invalid);
+			ui_switch.play();
+		});
+		buttons[1] = std::make_shared<Button>();
+		buttons[1]->setPosition(pos_1P_selector_btn_right);
+		buttons[1]->addItem(&img_1p_selector_btn_idle, SDL_FLIP_NONE, pos_1P_selector_btn_right, "idle");
+		buttons[1]->addItem(&img_1p_selector_btn_down, SDL_FLIP_NONE, pos_1P_selector_btn_right, "down");
+		buttons[1]->setActiveRenderActionSet("idle");
+		buttons[1]->setCallback(Button::inputResult::Clicked, [this]() {
+			buttons[1]->setActiveRenderActionSet("down");
+			is_btn_1P_right_down=true;
+		});
+		buttons[1]->setCallback(Button::inputResult::Released, [this]() {
+			buttons[1]->setActiveRenderActionSet("idle");
+			is_btn_1P_right_down=false;
+			player_type_1 = (PlayerType)(((int)PlayerType::Invalid + (int)player_type_1 + 1) % (int)PlayerType::Invalid);
+			ui_switch.play();
+		});
+		buttons[2] = std::make_shared<Button>();
+		buttons[2]->setPosition(pos_2P_selector_btn_left);
+		buttons[2]->addItem(&img_2p_selector_btn_idle, SDL_FLIP_HORIZONTAL, pos_2P_selector_btn_left, "idle");
+		buttons[2]->addItem(&img_2p_selector_btn_down, SDL_FLIP_HORIZONTAL, pos_2P_selector_btn_left, "down");
+		buttons[2]->setActiveRenderActionSet("idle");
+		buttons[2]->setCallback(Button::inputResult::Clicked, [this]() {
+			buttons[2]->setActiveRenderActionSet("down");
+			is_btn_2P_left_down=true;
+		});
+		buttons[2]->setCallback(Button::inputResult::Released, [this]() {
+			buttons[2]->setActiveRenderActionSet("idle");
+			is_btn_2P_left_down=false;
+			player_type_2 = (PlayerType)(((int)PlayerType::Invalid + (int)player_type_2 - 1) % (int)PlayerType::Invalid);
+			ui_switch.play();
+		});
+		buttons[3] = std::make_shared<Button>();
+		buttons[3]->setPosition(pos_2P_selector_btn_right);
+		buttons[3]->addItem(&img_2p_selector_btn_idle, SDL_FLIP_NONE, pos_2P_selector_btn_right, "idle");
+		buttons[3]->addItem(&img_2p_selector_btn_down, SDL_FLIP_NONE, pos_2P_selector_btn_right, "down");
+		buttons[3]->setActiveRenderActionSet("idle");
+		buttons[3]->setCallback(Button::inputResult::Clicked, [this]() {
+			buttons[3]->setActiveRenderActionSet("down");
+			is_btn_2P_right_down=true;
+		});
+		buttons[3]->setCallback(Button::inputResult::Released, [this]() {
+			buttons[3]->setActiveRenderActionSet("idle");
+			is_btn_2P_right_down=false;
+			player_type_2 = (PlayerType)(((int)PlayerType::Invalid + (int)player_type_2 + 1) % (int)PlayerType::Invalid);
+			ui_switch.play();
+		});
+		buttons[4] = std::make_shared<Button>();
+		buttons[4]->addItem(&img_selector_tip, SDL_FLIP_NONE, pos_img_tip);
+		buttons[4]->setCallback(Button::inputResult::Clicked, [this]() {
+			screenManager.switchTo(ScreenManager::ScreenType::Game);
+			ui_confirm.play();
+		});
 	}
 
-	void update(int delta)
+	void update(float delta)
 	{
 		animation_peashooter.update(delta);
 		animation_sunflower.update(delta);
 		animation_gloomshroom.update(delta);
 		animation_nut.update(delta);
-		animation_yellowmshroom.update(delta);
+		animation_buttermshroom.update(delta);
 
-		selector_bg_scroll_offset_x += 5;
+		selector_bg_scroll_offset_x += 0.5*delta;
 
-		if (selector_bg_scroll_offset_x >= img_peashooter_selector_bg_left.getwidth())
+		if (selector_bg_scroll_offset_x >= img_peashooter_selector_bg.getWidth())
 			selector_bg_scroll_offset_x = 0;
 	}
 
@@ -132,88 +200,104 @@ public:
 		switch (player_type_2)
 		{
 		case PlayerType::Peashooter:
-			img_p1_selector_bg = &img_peashooter_selector_bg_right;
+			img_p1_selector_bg = &img_peashooter_selector_bg;
 			break;
 		case PlayerType::Sunflower:
-			img_p1_selector_bg = &img_sunflower_selector_bg_right;
+			img_p1_selector_bg = &img_sunflower_selector_bg;
 			break;
 		case PlayerType::Gloomshroom:
-			img_p1_selector_bg = &img_gloomshroom_selector_bg_right;
+			img_p1_selector_bg = &img_gloomshroom_selector_bg;
 			break;
 		case PlayerType::Nut:
-			img_p1_selector_bg = &img_nut_selector_bg_right;
+			img_p1_selector_bg = &img_nut_selector_bg;
 			break;
-		case PlayerType::Yellowmshroom:
-			img_p1_selector_bg = &img_yellowmshroom_selector_bg_right;
+		case PlayerType::Buttermshroom:
+			img_p1_selector_bg = &img_buttermshroom_selector_bg;
 			break;
 		default:
-			img_p1_selector_bg = &img_peashooter_selector_bg_right;
+			img_p1_selector_bg = &img_peashooter_selector_bg;
 			break;
 		}
 
 		switch (player_type_1)
 		{
 		case PlayerType::Peashooter:
-			img_p2_selector_bg = &img_peashooter_selector_bg_left;
+			img_p2_selector_bg = &img_peashooter_selector_bg;
 			break;
 		case PlayerType::Sunflower:
-			img_p2_selector_bg = &img_sunflower_selector_bg_left;
+			img_p2_selector_bg = &img_sunflower_selector_bg;
 			break;
 		case PlayerType::Gloomshroom:
-			img_p2_selector_bg = &img_gloomshroom_selector_bg_left;
+			img_p2_selector_bg = &img_gloomshroom_selector_bg;
 			break;
 		case PlayerType::Nut:
-			img_p2_selector_bg = &img_nut_selector_bg_left;
+			img_p2_selector_bg = &img_nut_selector_bg;
 			break;
-		case PlayerType::Yellowmshroom:
-			img_p2_selector_bg = &img_yellowmshroom_selector_bg_left;
+		case PlayerType::Buttermshroom:
+			img_p2_selector_bg = &img_buttermshroom_selector_bg;
 			break;
 		default:
-			img_p2_selector_bg = &img_peashooter_selector_bg_left;
+			img_p2_selector_bg = &img_peashooter_selector_bg;
 			break;
 		}
 
-		putImage(0, 0, &img_selector_bg);
-		putImage(selector_bg_scroll_offset_x-img_p1_selector_bg->getwidth(),0,img_p1_selector_bg);
-		putImage(selector_bg_scroll_offset_x,0,img_p1_selector_bg->getwidth()-selector_bg_scroll_offset_x,0,
-			img_p1_selector_bg,0,0);
-		putImage(getwidth()-img_p2_selector_bg->getwidth(),0,img_p2_selector_bg->getwidth()-selector_bg_scroll_offset_x,0,
-			img_p2_selector_bg,selector_bg_scroll_offset_x,0);
-		putImage(getwidth()-selector_bg_scroll_offset_x,0,img_p2_selector_bg);
+		camera.draw(&img_selector_bg);
 
-		putImage(pos_img_VS.x,pos_img_VS.y,&img_VS);
+		SDL_FRect dst={(float)selector_bg_scroll_offset_x-img_p1_selector_bg->getWidth()
+		,0,(float)img_p1_selector_bg->getWidth(),(float)img_p1_selector_bg->getHeight()};
+		SDL_Rect src={};
+		camera.draw(img_p1_selector_bg,&dst);
+		dst={(float)selector_bg_scroll_offset_x,0,
+			(float)img_p1_selector_bg->getWidth()-selector_bg_scroll_offset_x,
+			(float)img_p1_selector_bg->getHeight()};
+		src={0,0,
+			(int)(img_p1_selector_bg->getWidth()-selector_bg_scroll_offset_x),
+			img_p1_selector_bg->getHeight()};
+		camera.draw(img_p1_selector_bg->getTexture(),&src,&dst);
+		dst={(float)WINDOW_WIDTH-selector_bg_scroll_offset_x,0,
+			(float)img_p1_selector_bg->getWidth(),(float)img_p1_selector_bg->getHeight()};
+		camera.draw(img_p2_selector_bg, &dst);
+		dst={(float)WINDOW_WIDTH-img_p2_selector_bg->getWidth(),0,
+			(float)img_p2_selector_bg->getWidth()-selector_bg_scroll_offset_x,
+			(float)img_p2_selector_bg->getHeight()};
+		src={(int)selector_bg_scroll_offset_x,0,
+			(int)(img_p2_selector_bg->getWidth()-selector_bg_scroll_offset_x),
+			img_p2_selector_bg->getHeight()};
+		camera.draw(img_p2_selector_bg->getTexture(),&src,&dst);
 
-		putImage(pos_img_1P.x,pos_img_1P.y,&img_1P);
-		putImage(pos_img_2P.x,pos_img_2P.y,&img_2P);
-		putImage(pos_img_1P_gravestone.x,pos_img_1P_gravestone.y,&img_gravestone_right);
-		putImage(pos_img_2P_gravestone.x,pos_img_2P_gravestone.y,&img_gravestone_left);
+		camera.draw(pos_img_VS,&img_VS);
+		camera.draw(pos_img_1P,&img_1P);
+		camera.draw(pos_img_2P,&img_2P);
+
+		camera.draw(pos_img_1P_gravestone,&img_gravestone,SDL_FLIP_HORIZONTAL);
+		camera.draw(pos_img_2P_gravestone,&img_gravestone);
 
 		switch (player_type_1)
 		{
 		case PlayerType::Peashooter:
-			animation_peashooter.draw(camera, pos_animation_1P.x, pos_animation_1P.y);
-			pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone_right.getwidth() - textwidth(str_peashooter_name)) / 2;
+			camera.draw(pos_animation_1P, animation_peashooter.getFrame(), SDL_FLIP_NONE);
+			pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone.getWidth() - textwidth(str_peashooter_name)) / 2;
 			outtextxy_shaded(pos_img_1P_name.x, pos_img_1P_name.y, str_peashooter_name);
 			break;
 		case PlayerType::Sunflower:
-			animation_sunflower.draw(camera, pos_animation_1P.x, pos_animation_1P.y);
-			pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone_right.getwidth() - textwidth(str_sunflower_name)) / 2;
+			camera.draw(pos_animation_1P, animation_sunflower.getFrame(), SDL_FLIP_NONE);
+			pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone.getWidth() - textwidth(str_sunflower_name)) / 2;
 			outtextxy_shaded(pos_img_1P_name.x, pos_img_1P_name.y, str_sunflower_name);
 			break;
 		case PlayerType::Gloomshroom:
-			animation_gloomshroom.draw(camera, pos_animation_1P.x, pos_animation_1P.y);
-			pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone_right.getwidth() - textwidth(str_gloomshroom_name)) / 2;
+			camera.draw(pos_animation_1P, animation_gloomshroom.getFrame(), SDL_FLIP_NONE);
+			pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone.getWidth() - textwidth(str_gloomshroom_name)) / 2;
 			outtextxy_shaded(pos_img_1P_name.x, pos_img_1P_name.y, str_gloomshroom_name);
 			break;
 		case PlayerType::Nut:
-			animation_nut.draw(camera, pos_animation_1P.x, pos_animation_1P.y);
-			pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone_right.getwidth() - textwidth(str_nut_name)) / 2;
+			camera.draw(pos_animation_1P, animation_nut.getFrame(), SDL_FLIP_NONE);
+			pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone.getWidth() - textwidth(str_nut_name)) / 2;
 			outtextxy_shaded(pos_img_1P_name.x, pos_img_1P_name.y, str_nut_name);
 			break;
-		case PlayerType::Yellowmshroom:
-			animation_yellowmshroom.draw(camera, pos_animation_1P.x, pos_animation_1P.y);
-			pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone_right.getwidth() - textwidth(str_yellowmshroom_name)) / 2;
-			outtextxy_shaded(pos_img_1P_name.x, pos_img_1P_name.y, str_yellowmshroom_name);
+		case PlayerType::Buttermshroom:
+			camera.draw(pos_animation_1P, animation_buttermshroom.getFrame(), SDL_FLIP_NONE);
+			pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone.getWidth() - textwidth(str_buttermshroom_name)) / 2;
+			outtextxy_shaded(pos_img_1P_name.x, pos_img_1P_name.y, str_buttermshroom_name);
 			break;
 		default:break;
 		}
@@ -221,98 +305,100 @@ public:
 		switch (player_type_2)
 		{
 		case PlayerType::Peashooter:
-			animation_peashooter.draw(camera, pos_animation_2P.x, pos_animation_2P.y);
-			pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone_left.getwidth() - textwidth(str_peashooter_name)) / 2;
+			camera.draw(pos_animation_2P, animation_peashooter.getFrame(), SDL_FLIP_HORIZONTAL);
+			pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone.getWidth() - textwidth(str_peashooter_name)) / 2;
 			outtextxy_shaded(pos_img_2P_name.x, pos_img_2P_name.y, str_peashooter_name);
 			break;
 		case PlayerType::Sunflower:
-			animation_sunflower.draw(camera, pos_animation_2P.x, pos_animation_2P.y);
-			pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone_left.getwidth() - textwidth(str_sunflower_name)) / 2;
+			camera.draw(pos_animation_2P, animation_sunflower.getFrame(), SDL_FLIP_HORIZONTAL);
+			pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone.getWidth() - textwidth(str_sunflower_name)) / 2;
 			outtextxy_shaded(pos_img_2P_name.x, pos_img_2P_name.y, str_sunflower_name);
 			break;
 		case PlayerType::Gloomshroom:
-			animation_gloomshroom.draw(camera, pos_animation_2P.x, pos_animation_2P.y);
-			pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone_left.getwidth() - textwidth(str_gloomshroom_name)) / 2;
+			camera.draw(pos_animation_2P, animation_gloomshroom.getFrame(), SDL_FLIP_HORIZONTAL);
+			pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone.getWidth() - textwidth(str_gloomshroom_name)) / 2;
 			outtextxy_shaded(pos_img_2P_name.x, pos_img_2P_name.y, str_gloomshroom_name);
 			break;
 		case PlayerType::Nut:
-			animation_nut.draw(camera, pos_animation_2P.x, pos_animation_2P.y);
-			pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone_left.getwidth() - textwidth(str_nut_name)) / 2;
+			camera.draw(pos_animation_2P, animation_nut.getFrame(), SDL_FLIP_HORIZONTAL);
+			pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone.getWidth() - textwidth(str_nut_name)) / 2;
 			outtextxy_shaded(pos_img_2P_name.x, pos_img_2P_name.y, str_nut_name);
 			break;
-		case PlayerType::Yellowmshroom:
-			animation_yellowmshroom.draw(camera, pos_animation_2P.x, pos_animation_2P.y);
-			pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone_left.getwidth() - textwidth(str_yellowmshroom_name)) / 2;
-			outtextxy_shaded(pos_img_2P_name.x, pos_img_2P_name.y, str_yellowmshroom_name);
+		case PlayerType::Buttermshroom:
+			camera.draw(pos_animation_2P, animation_buttermshroom.getFrame(), SDL_FLIP_HORIZONTAL);
+			pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone.getWidth() - textwidth(str_buttermshroom_name)) / 2;
+			outtextxy_shaded(pos_img_2P_name.x, pos_img_2P_name.y, str_buttermshroom_name);
 			break;
 		default:break;
 		}
 
-		putImage(pos_1P_selector_btn_left.x, pos_1P_selector_btn_left.y, is_btn_1P_left_down ? 
-			&img_1p_selector_btn_down_left : &img_1p_selector_btn_idle_left);
-		putImage(pos_1P_selector_btn_right.x, pos_1P_selector_btn_right.y, is_btn_1P_right_down ?
-			 &img_1p_selector_btn_down_right : &img_1p_selector_btn_idle_right);
-		putImage(pos_2P_selector_btn_left.x, pos_2P_selector_btn_left.y, is_btn_2P_left_down ?
-			 &img_2p_selector_btn_down_left : &img_2p_selector_btn_idle_left);
-		putImage(pos_2P_selector_btn_right.x, pos_2P_selector_btn_right.y, is_btn_2P_right_down ?
-			 &img_2p_selector_btn_down_right : &img_2p_selector_btn_idle_right);
-		putImage(pos_img_1P_desc.x, pos_img_1P_desc.y, &img_1p_desc);
-		putImage(pos_img_2P_desc.x, pos_img_2P_desc.y, &img_2p_desc);
+		for(auto& button : buttons)button->draw(camera);
+		camera.draw(pos_img_1P_desc, &img_1p_desc);
+		camera.draw(pos_img_2P_desc, &img_2p_desc);
 
-		putImage(pos_img_tip.x, pos_img_tip.y, &img_selector_tip);
+		camera.draw(pos_img_tip, &img_selector_tip);
 	}
 
-	void input(const ExMessage& msg)
+	void input(const SDL_Event& msg)
 	{
-		switch (msg.message)
+		switch (msg.type)
 		{
-		case WM_KEYDOWN:
-			switch (msg.vkcode)
+		case SDL_KEYDOWN:
+			switch (msg.key.keysym.sym)
 			{
-			case 'A':
+			case 'a':
 				is_btn_1P_left_down = true;
+				buttons[0]->setActiveRenderActionSet("down");
 				break;
-			case 'D':
+			case 'd':
 				is_btn_1P_right_down = true;
+				buttons[1]->setActiveRenderActionSet("down");
 				break;
-			case VK_LEFT:
+			case SDLK_LEFT:
 				is_btn_2P_left_down = true;
+				buttons[2]->setActiveRenderActionSet("down");
 				break;
-			case VK_RIGHT:
+			case SDLK_RIGHT:
 				is_btn_2P_right_down = true;
+				buttons[3]->setActiveRenderActionSet("down");
 				break;
 			}
 			break;
-		case WM_KEYUP:
-			switch (msg.vkcode)
+		case SDL_KEYUP:
+			switch (msg.key.keysym.sym)
 			{
-			case 'A':
+			case 'a':
 				is_btn_1P_left_down = false;
+				buttons[0]->setActiveRenderActionSet("idle");
 				player_type_1 = (PlayerType)(((int)PlayerType::Invalid + (int)player_type_1 - 1) % (int)PlayerType::Invalid);
-				mciSendString(L"play ui_switch from 0", NULL, 0, NULL);
+				ui_switch.play();
 				break;
-			case 'D':
+			case 'd':
 				is_btn_1P_right_down = false;
+				buttons[1]->setActiveRenderActionSet("idle");
 				player_type_1 = (PlayerType)(((int)PlayerType::Invalid + (int)player_type_1 + 1) % (int)PlayerType::Invalid);
-				mciSendString(L"play ui_switch from 0", NULL, 0, NULL);
+				ui_switch.play();
 				break;
-			case VK_LEFT:
+			case SDLK_LEFT:
 				is_btn_2P_left_down = false;
+				buttons[2]->setActiveRenderActionSet("idle");
 				player_type_2 = (PlayerType)(((int)PlayerType::Invalid + (int)player_type_2 - 1) % (int)PlayerType::Invalid);
-				mciSendString(L"play ui_switch from 0", NULL, 0, NULL);
+				ui_switch.play();
 				break;
-			case VK_RIGHT:
+			case SDLK_RIGHT:
 				is_btn_2P_right_down = false;
+				buttons[3]->setActiveRenderActionSet("idle");
 				player_type_2 = (PlayerType)(((int)PlayerType::Invalid + (int)player_type_2 + 1) % (int)PlayerType::Invalid);
-				mciSendString(L"play ui_switch from 0", NULL, 0, NULL);
+				ui_switch.play();
 				break;
-			case VK_RETURN:
+			case SDLK_RETURN:
 				screenManager.switchTo(ScreenManager::ScreenType::Game);
-				mciSendString(L"play ui_confirm from 0", NULL, 0, NULL);
+				ui_confirm.play();
 				break;
 			}
 			break;
 		}
+		for(auto& button : buttons)button->input(msg);
 	}
 
 	void exit()
@@ -335,9 +421,9 @@ public:
 			player_1 = new Nut();
 			img_player1_avatar = &img_avatar_nut;
 			break;
-		case PlayerType::Yellowmshroom:
-			player_1 = new Yellowmshroom();
-			img_player1_avatar = &img_avatar_yellowmshroom;
+		case PlayerType::Buttermshroom:
+			player_1 = new Buttermshroom();
+			img_player1_avatar = &img_avatar_buttermshroom;
 			break;
 		default:break;
 		}
@@ -361,24 +447,26 @@ public:
 			player_2 = new Nut(false);
 			img_player2_avatar = &img_avatar_nut;
 			break;
-		case PlayerType::Yellowmshroom:
-			player_2 = new Yellowmshroom(false);
-			img_player2_avatar = &img_avatar_yellowmshroom;
+		case PlayerType::Buttermshroom:
+			player_2 = new Buttermshroom(false);
+			img_player2_avatar = &img_avatar_buttermshroom;
 			break;
 		default:break;
 		}
 		player_2->set_id(PlayerID::P2);
 
-		mciSendString(L"stop bgm_menu", NULL, 0, NULL);
+		bgm_menu.stop();
 	}
 
 private:
-	void outtextxy_shaded(int x, int y, LPCTSTR str)
+	void outtextxy_shaded(int x, int y, const std::string& str)
 	{
-		settextcolor(RGB(45, 45, 45));
-		outtextxy(x + 3, y + 3, str);
-		settextcolor(RGB(255, 255, 255));
-		outtextxy(x, y, str);
+		font_main.drawText(str, { 0, 0, 0, 255 }, { x + 3.0f, y + 3.0f });
+		font_main.drawText(str, { 255, 255, 255, 255 }, { (float)x, (float)y });
+	}
+	int textwidth(const std::string& str)
+	{
+		return font_main.textwidth(str);
 	}
 
 private:
@@ -388,7 +476,7 @@ private:
 		Sunflower,
 		Gloomshroom,
 		Nut,
-		Yellowmshroom,
+		Buttermshroom,
 		Invalid
 	};
 
@@ -401,30 +489,29 @@ private:
 	Animation animation_sunflower;
 	Animation animation_gloomshroom;
 	Animation animation_nut;
-	Animation animation_yellowmshroom;
-	POINT pos_img_VS = { 0 };
-	POINT pos_img_1P = { 0 };
-	POINT pos_img_tip = { 0 };
-	POINT pos_img_2P = { 0 };
-	POINT pos_img_1P_desc = { 0 };
-	POINT pos_img_1P_name = { 0 };
-	POINT pos_img_2P_desc = { 0 };
-	POINT pos_img_2P_name = { 0 };
-	POINT pos_animation_1P = { 0 };
-	POINT pos_animation_2P = { 0 };
-	POINT pos_img_1P_gravestone = { 0 };
-	POINT pos_img_2P_gravestone = { 0 };
-	POINT pos_1P_selector_btn_left = { 0 };
-	POINT pos_1P_selector_btn_right = { 0 };
-	POINT pos_2P_selector_btn_left = { 0 };
-	POINT pos_2P_selector_btn_right = { 0 };
-	LPCTSTR str_peashooter_name = L"beanshooter";
-	LPCTSTR str_sunflower_name = L"sunflower";
-	LPCTSTR str_gloomshroom_name = L"gloomshroom";
-	LPCTSTR str_nut_name = L"nut";
-	LPCTSTR str_yellowmshroom_name = L"yellowmshroom";
+	Animation animation_buttermshroom;
+	Vector2 pos_img_VS = { 0 };
+	Vector2 pos_img_1P = { 0 };
+	Vector2 pos_img_tip = { 0 };
+	Vector2 pos_img_2P = { 0 };
+	Vector2 pos_img_1P_desc = { 0 };
+	Vector2 pos_img_1P_name = { 0 };
+	Vector2 pos_img_2P_desc = { 0 };
+	Vector2 pos_img_2P_name = { 0 };
+	Vector2 pos_animation_1P = { 0 };
+	Vector2 pos_animation_2P = { 0 };
+	Vector2 pos_img_1P_gravestone = { 0 };
+	Vector2 pos_img_2P_gravestone = { 0 };
+	Vector2 pos_1P_selector_btn_left = { 0 };
+	Vector2 pos_1P_selector_btn_right = { 0 };
+	Vector2 pos_2P_selector_btn_left = { 0 };
+	Vector2 pos_2P_selector_btn_right = { 0 };
+	std::string str_peashooter_name = "- beanshooter -";
+	std::string str_sunflower_name = "- sunflower -";
+	std::string str_gloomshroom_name = "- gloomshroom -";
+	std::string str_nut_name = "- nut -";
+	std::string str_buttermshroom_name = "- buttermshroom -";
 	PlayerType player_type_1 = PlayerType::Peashooter;
 	PlayerType player_type_2 = PlayerType::Sunflower;
-	int selector_bg_scroll_offset_x = 0;
-
+	float selector_bg_scroll_offset_x = 0;
 };

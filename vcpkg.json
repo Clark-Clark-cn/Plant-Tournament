@@ -1,0 +1,11 @@
+{
+  "dependencies": [
+    "nlohmann-json",
+    "sdl2-image",
+    {
+      "name": "sdl2-mixer",
+      "features": ["mpg123"]
+    },
+    "sdl2-ttf"
+  ]
+}

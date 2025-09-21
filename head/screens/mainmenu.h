@@ -3,10 +3,15 @@
 
 #include "manager.h"
 #include <iostream>
+#include "baseItem/MessageBox.h"
 
 extern ScreenManager screenManager;
 
 extern IMAGE img_menu_bg;
+extern Camera camera;
+
+extern Audio bgm_menu;
+extern Audio ui_confirm;
 
 class mainmenu : public Screen
 {
@@ -14,14 +19,18 @@ public:
     mainmenu()=default;
     ~mainmenu()=default;
     void enter(){
-        mciSendString(L"play bgm_menu repeat from 0", nullptr, 0, nullptr);
+        bgm_menu.play(-1);
     }
     void draw(const Camera& camera) {
-        putimage(0,0,&img_menu_bg);
+        camera.draw(&img_menu_bg);
     }
-    void input(const ExMessage& msg) {
-        if(msg.message==WM_KEYUP){
-            mciSendString(L"play ui_confirm from 0", nullptr, 0, nullptr);
+    void input(const SDL_Event& msg) {
+        if(msg.type==SDL_KEYUP){
+            ui_confirm.play();
+            screenManager.switchTo(ScreenManager::ScreenType::Selector);
+        }
+        else if(msg.type==SDL_MOUSEBUTTONUP){
+            ui_confirm.play();
             screenManager.switchTo(ScreenManager::ScreenType::Selector);
         }
     }

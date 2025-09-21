@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Atlas.h"
-#include "Vector2.h"
+#include "baseItem/Atlas.h"
+#include "baseItem/Vector2.h"
 
 class Particle{
 public:
@@ -22,7 +22,7 @@ public:
     bool checkValid() const {
         return valid;
     }
-    void update(int delta){
+    void update(float delta){
         timer+=delta;
         if(timer>=lifespan){
             timer=0;
@@ -33,7 +33,7 @@ public:
         }
     }
     void draw(const Camera& camera) const {
-        putImage(camera,(int)position.x,(int)position.y,atlas->getImage(frameCount));
+        camera.draw(position,atlas->getImage(frameCount));
     }
 private:
     Vector2 position={0, 0};

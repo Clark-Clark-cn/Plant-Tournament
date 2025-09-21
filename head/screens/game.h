@@ -2,10 +2,10 @@
 #include "screen.h"
 
 #include "manager.h"
-#include "../base.h"
-#include "../platform.h"
-#include "../players/Player.h"
-#include "../bullets/efforts.h"
+#include "baseItem/base.h"
+#include "platform.h"
+#include "players/Player.h"
+#include "bullets/efforts.h"
 #include <algorithm>
 #include <vector>
 
@@ -28,15 +28,18 @@ extern std::vector<Bullet*> bullet_list;
 extern std::vector<EffortBullet*> effort_bullets;
 extern Camera camera;
 
+extern Audio bgm_game;
+extern Audio ui_win;
+
 bool is_game_over=false;
 
 class game : public Screen
 {
-    POINT pos_img_sky={0, 0};
-    POINT pos_img_hills={0, 0};
-    POINT pos_img_winner_bar={0, 0};
-    POINT pos_img_winner_text={0, 0};
-    IMAGE* img_winner=nullptr;
+    Vector2 pos_img_sky={0, 0};
+    Vector2 pos_img_hills={0, 0};
+    Vector2 pos_img_winner_bar={0, 0};
+    Vector2 pos_img_winner_text={0, 0};
+    IMAGE* img_winner_text=nullptr;
 
     int pos_x_img_winner_bar_dst=0;
     int pos_x_img_winner_text_dst=0;
@@ -46,18 +49,25 @@ class game : public Screen
     bool is_slide_out_started=false;
     int speed_winner_bar=3;
     int speed_winner_text=2;
+    Timer timer_summon_effort_bullet;
 public:
-    game(){}
+    game(){
+        timer_summon_effort_bullet.setWaitTime(10);
+        timer_summon_effort_bullet.setOneShot(false);
+        timer_summon_effort_bullet.set_callback([&]{
+            randomSummonEffortBullets();
+        });
+    }
     ~game(){}
     void enter(){
-        mciSendString(L"play bgm_game from 0 repeat", nullptr, 0, nullptr);
+        bgm_game.play(-1);
         is_game_over=false;
         is_slide_out_started=false;
-        pos_img_winner_bar={ (-img_winner_bar.getwidth()), (getheight()-img_winner_bar.getheight())/2 };
-        pos_img_winner_text={ (pos_img_winner_bar.x), (getheight()-img_1p_winner.getheight())/2 };
-        pos_x_img_winner_text_dst=(getwidth()-img_1p_winner.getwidth())/2;
-        pos_img_sky = {(getwidth()-img_sky.getwidth())/2, (getheight()-img_sky.getheight())/2};
-        pos_img_hills = {(getwidth()-img_hills.getwidth())/2, (getheight()-img_hills.getheight())/2};
+        pos_img_winner_bar={ float(-img_winner_bar.getWidth()), (WINDOW_HEIGHT-img_winner_bar.getHeight())/2.0f };
+        pos_img_winner_text={ float(pos_img_winner_bar.x), (WINDOW_HEIGHT-img_1p_winner.getHeight())/2.0f };
+        pos_x_img_winner_text_dst=(WINDOW_WIDTH-img_1p_winner.getWidth())/2;
+        pos_img_sky = {(WINDOW_WIDTH-img_sky.getWidth())/2.0f, (WINDOW_HEIGHT-img_sky.getHeight())/2.0f};
+        pos_img_hills = {(WINDOW_WIDTH-img_hills.getWidth())/2.0f, (WINDOW_HEIGHT-img_hills.getHeight())/2.0f};
         timer_winner_slide_in.restart();
         timer_winner_slide_in.setWaitTime(2500);
         timer_winner_slide_in.setOneShot(true);
@@ -74,11 +84,13 @@ public:
         platform_list=Config::getInstance()->getPlatforms();
         player_1->set_position(200, 50);
         player_2->set_position(975, 50);
+        timer_summon_effort_bullet.restart();
     }
-    void update(int delta){
+    void update(float delta){
         player_1->update(delta);
         player_2->update(delta);
         camera.update(delta);
+        timer_summon_effort_bullet.update(delta);
         bullet_list.erase(std::remove_if(bullet_list.begin(), bullet_list.end(),
             [](const Bullet* bullet) { 
                 bool deletable = bullet->checkCanRemove();
@@ -100,9 +112,9 @@ public:
         if(player_1->get_hp()<=0||player_2->get_hp()<=0){
             if(!is_game_over){
                 is_game_over=true;
-                mciSendString(L"stop bgm_game", nullptr, 0, nullptr);
-                mciSendString(L"play ui_win from 0", nullptr, 0, nullptr);
-                img_winner=player_1->get_hp()>0?&img_1p_winner:&img_2p_winner;
+                bgm_game.stop();
+                ui_win.play();
+                img_winner_text=player_1->get_hp()>0?&img_1p_winner:&img_2p_winner;
             }
         }
         if(is_game_over){
@@ -110,15 +122,15 @@ public:
             pos_img_winner_text.x+=(int)(speed_winner_text*delta);
             if(!is_slide_out_started){
                 timer_winner_slide_in.update(delta);
-                pos_img_winner_bar.x = std::min<LONG>(pos_img_winner_bar.x, pos_x_img_winner_bar_dst);
-                pos_img_winner_text.x = std::min<LONG>(pos_img_winner_text.x, pos_x_img_winner_text_dst);
+                pos_img_winner_bar.x = std::min<long>(pos_img_winner_bar.x, pos_x_img_winner_bar_dst);
+                pos_img_winner_text.x = std::min<long>(pos_img_winner_text.x, pos_x_img_winner_text_dst);
             }
             else timer_winner_slide_out.update(delta);
         }
     }
     void exit(){
-        mciSendString(L"stop bgm_game",nullptr,0,nullptr);
-        img_winner=nullptr;
+        bgm_game.stop();
+        img_winner_text=nullptr;
         is_game_over=false;
         is_slide_out_started=false;
         delete player_1;
@@ -129,8 +141,8 @@ public:
         camera.reset();
     }
     void draw(const Camera& camera){
-        putImage(camera,pos_img_sky.x, pos_img_sky.y, &img_sky);
-        putImage(camera,pos_img_hills.x, pos_img_hills.y, &img_hills);
+        camera.draw(&img_sky);
+        camera.draw(&img_hills);
         for(auto& platform:platform_list)
             platform.draw(camera);
         player_1->draw(camera);
@@ -142,12 +154,20 @@ public:
             bullet->draw(camera);
         }
         if(is_game_over){
-            putImage(pos_img_winner_bar.x,pos_img_winner_bar.y,&img_winner_bar);
-            putImage(pos_img_winner_text.x,pos_img_winner_text.y,img_winner);
+            camera.draw(pos_img_winner_bar, &img_winner_bar);
+            camera.draw(pos_img_winner_text, img_winner_text);
         }
     }
-    void input(const ExMessage& msg){
+    void input(const SDL_Event& msg){
         player_1->input(msg);
         player_2->input(msg);
+    }
+    
+    void randomSummonEffortBullets()
+    {
+        if (rand() % Config::getInstance()->getInt("player.multiplier.effort") == 0)
+        {
+            effort_bullets.push_back(new EffortBullet());
+        }
     }
 };

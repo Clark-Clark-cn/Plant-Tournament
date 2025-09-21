@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Bullet.h"
-#include "../Camera.h"
-#include "../players/Player.h"
+#include "baseItem/Camera.h"
+#include "players/Player.h"
 
 extern Atlas atlas_bubble;
 
@@ -23,7 +23,7 @@ public:
         });
     }
     ~Bubble()=default;
-    void update(int delta)override{
+    void update(float delta)override{
         animation_bubble.update(delta);
         if(isValid){
             Vector2 newPos=owner->getPosition();

@@ -1,33 +1,35 @@
 #pragma once
 
 #include <string>
-#include <graphics.h>
 #include <vector>
+#include <SDL.h>
+#include <SDL_image.h>
+#include "base.h"
 
 class Atlas
 {
     std::vector<IMAGE> img_list;
 public:
-    Atlas()=default;
-    ~Atlas()=default;
+    Atlas() = default;
+    ~Atlas() = default;
 
-    void loadimage(const std::wstring& filePath, int num){
+    void loadimage(SDL_Renderer* renderer, const std::string& filePath, int num) {
         img_list.clear();
         img_list.resize(num);
 
-        wchar_t path[256];
+        char path[256];
         for (int i = 0; i < num; ++i) {
-            _stprintf_s(path,filePath.c_str(),i+1);
-            ::loadimage(&img_list[i], path);
+            snprintf(path, sizeof(path), filePath.c_str(), i + 1);
+            img_list[i].load(renderer,path);
         }
     }
-    void clear(){
+    void clear() {
         img_list.clear();
     }
     int size() const {
         return img_list.size();
     }
-    IMAGE* getImage(int index) {
+    const IMAGE* getImage(int index) {
         if (index < 0 || index >= img_list.size()) return &img_list.back();
         return &img_list[index];
     }

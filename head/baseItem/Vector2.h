@@ -49,6 +49,11 @@ public:
         y *= scalar;
     }
 
+    bool operator==(const Vector2& other) const
+    {
+        return x == other.x && y == other.y;
+    }
+
     float length() const
     {
         return std::sqrt(x * x + y * y);
@@ -61,5 +66,4 @@ public:
             return Vector2(x / len, y / len);
         return Vector2(0, 0);
     }
-
 };

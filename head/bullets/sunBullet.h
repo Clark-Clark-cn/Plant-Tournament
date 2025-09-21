@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Bullet.h"
-#include "../Camera.h"
+#include "baseItem/Camera.h"
 
 extern Atlas atlas_sun;
 extern Atlas atlas_sun_explode;
+
+extern Audio sun_explode;
 
 class SunBullet : public Bullet
 {
@@ -23,21 +25,21 @@ public:
         animation_break.setInterval(100);
         animation_break.setLoop(false);
         animation_break.setCallback([&] { canRemove = true; });
-        IMAGE* frameIdle = animation_idle.getFrame();
-        IMAGE* frameBreak = animation_break.getFrame();
-        breakRenderOffset.x = (frameIdle->getwidth() - frameBreak->getwidth()) / 2;
-        breakRenderOffset.y = (frameIdle->getheight() - frameBreak->getheight()) / 2;
+        const IMAGE* frameIdle = animation_idle.getFrame();
+        const IMAGE* frameBreak = animation_break.getFrame();
+        breakRenderOffset.x = (frameIdle->getWidth() - frameBreak->getWidth()) / 2;
+        breakRenderOffset.y = (frameIdle->getHeight() - frameBreak->getHeight()) / 2;
     }
     ~SunBullet() = default;
 
     void collide() override
     {
-        mciSendString(L"play sun_explode from 0", nullptr, 0, nullptr);
+        sun_explode.play();
         Bullet::collide();
         camera.shake(5,250);
     }
 
-    void update(int delta) override
+    void update(float delta) override
     {
         if (isValid)
         {

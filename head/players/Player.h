@@ -1,16 +1,14 @@
 #pragma once
 
-#include "../Timer.h"
-#include "../bullets/Bullet.h"
-#include "../Vector2.h"
-#include "../platform.h"
-#include "../Particle.h"
-#include "../Config.h"
+#include "baseItem/Timer.h"
+#include "bullets/Bullet.h"
+#include "baseItem/Vector2.h"
+#include "platform.h"
+#include "Particle.h"
+#include "baseItem/Config.h"
 #include "player_id.h"
 
-#include <Windows.h>
 #include <vector>
-#include <graphics.h>
 
 class StatusBar;
 class EffortBullet;
@@ -23,10 +21,10 @@ public:
 	Player(bool facing_right = true);
 	~Player() = default;
 
-	virtual void update(int delta);
+	virtual void update(float delta);
 
 	virtual void draw(const Camera& camera);
-	virtual void input(const ExMessage& msg);
+	virtual void input(const SDL_Event& msg);
 	
 
 	virtual void on_run(float dir_x);
@@ -142,14 +140,10 @@ protected:
 	bool is_hurrying = false;
 	bool is_invisible = false;
 	bool is_buttered = false;
-	Animation animation_idle_left;
-	Animation animation_idle_right;
-	Animation animation_run_left;
-	Animation animation_run_right;
-	Animation animation_attack_ex_left;
-	Animation animation_attack_ex_right;
-	Animation animation_die_left;
-	Animation animation_die_right;
+	Animation animation_idle;
+	Animation animation_run;
+	Animation animation_attack_ex;
+	Animation animation_die;
 	Animation animation_jump_effect;
 	Animation animation_land_effect;
 	Animation* current_animation = nullptr;
@@ -175,6 +169,4 @@ protected:
 	}
 
 	void move_and_collide(int delta);
-
-	void randomSummonEffortBullets();
 };

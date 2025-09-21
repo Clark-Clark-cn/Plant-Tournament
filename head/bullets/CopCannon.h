@@ -9,6 +9,8 @@ extern Atlas atlas_nut_explode;
 extern Player* player_1;
 extern Player* player_2;
 
+extern Audio boom;
+
 class CopCannon:public Bullet
 {
 public:
@@ -19,13 +21,12 @@ public:
         animation_explode.setInterval(100);
         animation_explode.setLoop(false);
         animation_explode.setCallback([&]{canRemove=true;});
-        IMAGE* img=atlas_nut_explode.getImage(0);
-        explode_size={(float)img->getwidth(),(float)img->getheight()};
+        const IMAGE* img=atlas_nut_explode.getImage(0);
+        explode_size={(float)img->getWidth(),(float)img->getHeight()};
     }
     ~CopCannon()=default;
     void collide()override{
-        std::wstring command=L"play boom from 0";
-        mciSendString(command.c_str(), nullptr, 0, nullptr);
+        boom.play();
         velocity=Vector2(0,0);
         Vector2 player_position,player_size;
         if(collideTarget==PlayerID::P1){
@@ -40,13 +41,15 @@ public:
         setPosition(bullet_position);
         Bullet::collide();
     }
-    void update(int delta) override {
+    void update(float delta) override {
         position+=velocity*(float)delta;
         if(!isValid)animation_explode.update(delta);
         if(checkIfExceedsScreen())canRemove=true;
     }
     void draw(const Camera& camera) const override{
-        if(isValid)putImage(camera,position.x,position.y,&img_cop_cannon);
+        if(isValid){
+            camera.draw(position,&img_cop_cannon);
+        }
         else animation_explode.draw(camera,position.x,position.y);
     }
 private:

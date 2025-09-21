@@ -37,12 +37,12 @@ public:
 		}
 		animation.setInterval(100);
 		animation.setLoop(true);
-		position.x=rand()%getwidth();
-		position.y=getheight();
+		position.x=rand()%WINDOW_WIDTH;
+		position.y=WINDOW_HEIGHT;
 	}
 	~EffortBullet() = default;
 
-	void update(int delta) override
+	void update(float delta) override
 	{
 		position += velocity * (float)delta;
 		animation.update(delta);

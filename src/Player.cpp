@@ -1,7 +1,7 @@
-#include "head/players/Player.h"
-#include "head/StatusBar.h"
-#include "head/bullets/efforts.h"
-#include "head/Config.h"
+#include "players/Player.h"
+#include "StatusBar.h"
+#include "bullets/efforts.h"
+#include "baseItem/Config.h"
 
 extern IMAGE img_1p_cursor;
 extern IMAGE img_2p_cursor;
@@ -41,7 +41,7 @@ Player::Player(bool facing_right)
         }
     );
 
-    current_animation = is_facing_right ? &animation_idle_right : &animation_idle_left;
+    current_animation = &animation_idle;
 
     timer_invulnerable.setWaitTime(Config::getInstance()->getInt("player.timer.invulnerable"));
     timer_invulnerable.setOneShot(true);
@@ -70,9 +70,9 @@ Player::Player(bool facing_right)
     timer_run_effect_generation.set_callback([&]()
         {
             Vector2 particle_position;
-            IMAGE* frame = atlas_run_effect.getImage(0);
-            particle_position.x = position.x + (size.x - frame->getwidth()) / 2;
-            particle_position.y = position.y + size.y - frame->getheight();
+            const IMAGE* frame = atlas_run_effect.getImage(0);
+            particle_position.x = position.x + (size.x - frame->getWidth()) / 2;
+            particle_position.y = position.y + size.y - frame->getHeight();
             particle_list.emplace_back(particle_position, &atlas_run_effect, 45);
         }
     );
@@ -81,9 +81,9 @@ Player::Player(bool facing_right)
     timer_die_effect_generation.set_callback([&]()
         {
             Vector2 particle_position;
-            IMAGE* frame = atlas_run_effect.getImage(0);
-            particle_position.x = position.x + (size.x - frame->getwidth()) / 2;
-            particle_position.y = position.y + size.y - frame->getheight();
+            const IMAGE* frame = atlas_run_effect.getImage(0);
+            particle_position.x = position.x + (size.x - frame->getWidth()) / 2;
+            particle_position.y = position.y + size.y - frame->getHeight();
             particle_list.emplace_back(particle_position, &atlas_run_effect, 150);
         }
     );
@@ -131,16 +131,18 @@ Player::Player(bool facing_right)
     );
 }
 
-void Player::update(int delta)
+void Player::update(float delta)
 {
     int direction = is_right_key_down - is_left_key_down;
+    if(is_facing_right)current_animation->setFlipMode(SDL_FLIP_NONE);
+    else current_animation->setFlipMode(SDL_FLIP_HORIZONTAL);
 
     if (direction != 0)
     {
         if (!is_attacking_ex)
         {
             is_facing_right = direction > 0;
-            current_animation = is_facing_right ? &animation_run_right : &animation_run_left;
+            current_animation = &animation_run;
             int delta_run=0;
             if(!is_hurrying)delta_run=direction * run_velocity * delta;
             else delta_run=direction * run_velocity * delta * hurry_multiplier;
@@ -149,18 +151,18 @@ void Player::update(int delta)
     }
     else
     {
-        current_animation = is_facing_right ? &animation_idle_right : &animation_idle_left;
+        current_animation = &animation_idle;
         timer_run_effect_generation.pause();
     }
 
     if (is_attacking_ex)
     {
-        current_animation = is_facing_right ? &animation_attack_ex_right : &animation_attack_ex_left;
+        current_animation = &animation_attack_ex;
     }
 
     if (hp <= 0)
     {
-        current_animation = last_hurt_direction.x < 0 ? &animation_die_left : &animation_die_right;
+        current_animation = &animation_die;
     }
 
     if(!is_buttered)current_animation->update(delta);
@@ -180,7 +182,7 @@ void Player::update(int delta)
 
     if (is_showing_sketch_frame)
     {
-        sketch_image(current_animation->getFrame(), &img_sketch);
+        current_animation->getFrame()->sketch(&img_sketch);
     }
 
     particle_list.erase(std::remove_if(
@@ -198,8 +200,7 @@ void Player::update(int delta)
 
     move_and_collide(delta);
 
-    if(position.y>getwidth())hp=0;
-    randomSummonEffortBullets();
+    if(position.y>WINDOW_HEIGHT)hp=0;
 
     if(is_recovering&&hp<max_hp)hp+=recover_multiplier*delta;
 
@@ -230,7 +231,7 @@ void Player::draw(const Camera& camera)
 
     if (hp > 0 && is_invulnerable && is_showing_sketch_frame && !is_invisible)
     {
-        putImage(camera, position.x, position.y, &img_sketch);
+        camera.draw(position,&img_sketch);
     }
     else if(!is_invisible)
     {
@@ -239,29 +240,30 @@ void Player::draw(const Camera& camera)
     statusBar->draw();
 
     if(is_buttered){
-        putImage(camera,position.x+size.x/4,position.y,&img_butter_splat);
+        camera.draw(position.x+size.x/4,position.y,&img_butter_splat);
     }
 
     if (is_debug)
     {
-        setlinecolor(RGB(0, 125, 255));
-        rectangle((int)position.x, (int)position.y, (int)position.x + size.x, (int)position.y + size.y);
+        camera.setColor({0,125,255});
+        SDL_Rect rect = {(int)position.x,(int)position.y,(int)size.x,(int)size.y};
+        camera.rect(rect);
     }
 
     if (is_cursor_visible){
         switch (id)
         {
         case PlayerID::P1:
-            putImage(camera, (int)position.x + (size.x - img_1p_cursor.getwidth()) / 2, (int)position.y - img_1p_cursor.getheight(), &img_1p_cursor);
+            camera.draw(position.x + (size.x - img_1p_cursor.getWidth()) / 2, position.y - img_1p_cursor.getHeight(), &img_1p_cursor);
             break;
         case PlayerID::P2:
-            putImage(camera, (int)position.x + (size.x - img_2p_cursor.getwidth()) / 2, (int)position.y - img_2p_cursor.getheight(), &img_2p_cursor);
+            camera.draw(position.x + (size.x - img_2p_cursor.getWidth()) / 2, position.y - img_2p_cursor.getHeight(), &img_2p_cursor);
             break;
         }
     }
 }
 
-void Player::input(const ExMessage& msg){
+void Player::input(const SDL_Event& msg){
     if (hp <= 0)
         return;
     if(is_buttered)
@@ -276,16 +278,16 @@ void Player::input(const ExMessage& msg){
     static const int p2_jump_key=Config::getInstance()->getInt("player.key.p2.jump");
     static const int p2_attack_key=Config::getInstance()->getInt("player.key.p2.attack");
     static const int p2_attackEx_key=Config::getInstance()->getInt("player.key.p2.attackEx");
-    switch (msg.message)
+    switch (msg.type)
     {
-    case WM_KEYDOWN:
+    case SDL_KEYDOWN:
         switch (id)
         {
         case PlayerID::P1:
-            if(msg.vkcode==p1_left_key)is_left_key_down = true;
-            else if(msg.vkcode==p1_right_key)is_right_key_down = true;
-            else if(msg.vkcode==p1_jump_key)on_jump();
-            else if(msg.vkcode==p1_attack_key){
+            if(msg.key.keysym.sym==p1_left_key)is_left_key_down = true;
+            else if(msg.key.keysym.sym==p1_right_key)is_right_key_down = true;
+            else if(msg.key.keysym.sym==p1_jump_key)on_jump();
+            else if(msg.key.keysym.sym==p1_attack_key){
                 if (can_attack&&!is_silenced)
                 {
                     attack();
@@ -293,7 +295,7 @@ void Player::input(const ExMessage& msg){
                     timer_attack_cd.restart();
                 }
             }
-            else if(msg.vkcode==p1_attackEx_key){
+            else if(msg.key.keysym.sym==p1_attackEx_key){
                 if (mp >= 100)
                 {
                     attackEx();
@@ -302,10 +304,10 @@ void Player::input(const ExMessage& msg){
             }
             break;
         case PlayerID::P2:
-            if(msg.vkcode==p2_left_key)is_left_key_down = true;
-            else if(msg.vkcode==p2_right_key)is_right_key_down = true;
-            else if(msg.vkcode==p2_jump_key)on_jump();
-            else if(msg.vkcode==p2_attack_key){
+            if(msg.key.keysym.sym==p2_left_key)is_left_key_down = true;
+            else if(msg.key.keysym.sym==p2_right_key)is_right_key_down = true;
+            else if(msg.key.keysym.sym==p2_jump_key)on_jump();
+            else if(msg.key.keysym.sym==p2_attack_key){
                 if (can_attack&&!is_silenced)
                 {
                     attack();
@@ -313,7 +315,7 @@ void Player::input(const ExMessage& msg){
                     timer_attack_cd.restart();
                 }
             }
-            else if(msg.vkcode==p2_attackEx_key){
+            else if(msg.key.keysym.sym==p2_attackEx_key){
                 if (mp >= 100)
                 {
                     attackEx();
@@ -323,16 +325,16 @@ void Player::input(const ExMessage& msg){
             break;
         }
         break;
-    case WM_KEYUP:
+    case SDL_KEYUP:
         switch (id)
         {
         case PlayerID::P1:
-            if(msg.vkcode==p1_left_key)is_left_key_down = false;
-            else if(msg.vkcode==p1_right_key)is_right_key_down = false;
+            if(msg.key.keysym.sym==p1_left_key)is_left_key_down = false;
+            else if(msg.key.keysym.sym==p1_right_key)is_right_key_down = false;
             break;
         case PlayerID::P2:
-            if(msg.vkcode==p2_left_key)is_left_key_down = false;
-            else if(msg.vkcode==p2_right_key)is_right_key_down = false;
+            if(msg.key.keysym.sym==p2_left_key)is_left_key_down = false;
+            else if(msg.key.keysym.sym==p2_right_key)is_right_key_down = false;
             break;
         }
         break;
@@ -341,40 +343,48 @@ void Player::input(const ExMessage& msg){
 
 void Player::move_and_collide(int delta)	{
     float last_velocity_y = velocity.y;
+    Vector2 old_position = position;
 
     velocity.y += gravity * (float)delta;
-    position += velocity * (float)delta;
+    Vector2 new_position = position + velocity * (float)delta;
 
-    if (hp <= 0)
+    if (hp <= 0){
+        position=new_position;
         return;
+    }
 
     if (velocity.y > 0)
     {
+        float min_collision_time = 1.0f;
+        const Platform* collision_platform =  nullptr;
         for (const Platform& platform : platform_list)
         {
             const Platform::CollisionShape& shape = platform.shape;
-            bool is_collide_x = (max(position.x + size.x, shape.right) - min(position.x, shape.left))
-                <= size.x + (shape.right - shape.left);
-            bool is_collide_y = (shape.y >= position.y && shape.y <= position.y + size.y);
 
-            if (is_collide_x && is_collide_y)
-            {
-                float delta_pos_y = velocity.y * delta;
-                float last_tick_foot_pos_y = position.y + size.y - delta_pos_y;
-                if (last_tick_foot_pos_y <= shape.y)
-                {
-                    position.y = shape.y - size.y;
-                    velocity.y = 0;
+            bool is_collide_x = (std::max(new_position.x+size.x,shape.right)-
+                std::min(new_position.x,shape.left)<= size.x+(shape.right-shape.left));
+            if(!is_collide_x)continue;
 
-                    if (last_velocity_y !=0)
-                    {
-                        on_land();
-                    }
-                    break;
+            float old_foot_y=old_position.y+size.y;
+            float new_foot_y = new_position.y+size.y;
+
+            if(old_foot_y<=shape.y&&new_foot_y>shape.y){
+                float collision_time= (shape.y-old_foot_y)/(new_foot_y-old_foot_y);
+                if(collision_time>=0.0f&&collision_time<min_collision_time){
+                    min_collision_time=collision_time;
+                    collision_platform=&platform;
                 }
             }
         }
+        if(collision_platform){
+            position.x=old_position.x+velocity.x*min_collision_time;
+            position.y=collision_platform->shape.y - size.y;
+            velocity.y=0;
+            if(last_velocity_y!=0)on_land();
+        }
+        else position=new_position;
     }
+    else position=new_position;
 
     if (is_invulnerable)
         return;
@@ -419,9 +429,9 @@ void Player::on_land()
     is_land_effect_visible = true;
     animation_land_effect.reset();
 
-    IMAGE* effect_frame = animation_land_effect.getFrame();
-    position_land_effect.x = position.x + (size.x - effect_frame->getwidth()) / 2;
-    position_land_effect.y = position.y + size.y - effect_frame->getheight();
+    const IMAGE* effect_frame = animation_land_effect.getFrame();
+    position_land_effect.x = position.x + (size.x - effect_frame->getWidth()) / 2;
+    position_land_effect.y = position.y + size.y - effect_frame->getHeight();
 }
 
 
@@ -443,15 +453,7 @@ void Player::on_jump()
     is_jump_effect_visible = true;
     animation_jump_effect.reset();
 
-    IMAGE* effect_frame = animation_jump_effect.getFrame();
-    position_jump_effect.x = position.x + (size.x - effect_frame->getwidth()) / 2;
-    position_jump_effect.y = position.y + size.y - effect_frame->getheight();
-}
-
-void Player::randomSummonEffortBullets()
-{
-    if (rand() % Config::getInstance()->getInt("player.multiplier.effort") == 0)
-    {
-        effort_bullets.push_back(new EffortBullet());
-    }
+    const IMAGE* effect_frame = animation_jump_effect.getFrame();
+    position_jump_effect.x = position.x + (size.x - effect_frame->getWidth()) / 2;
+    position_jump_effect.y = position.y + size.y - effect_frame->getHeight();
 }

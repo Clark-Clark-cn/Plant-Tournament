@@ -1,5 +1,6 @@
 #pragma once
 #include "screen.h"
+#include "baseItem/MessageBox.h"
 
 extern Screen* Menu;
 extern Screen* Game;
@@ -39,22 +40,30 @@ public:
         }
         currentScreen->enter();
     }
-    void input(const ExMessage& msg)
+    void input(const SDL_Event& msg)
     {
+        switch (msg.type)
+        {
+        case SDL_KEYDOWN:
+            if (msg.key.keysym.sym == SDLK_ESCAPE)
+            {
+                exit(0);
+            }
+            else if (msg.key.keysym.sym == SDLK_F1)
+            {
+                is_debug = !is_debug;
+            }
+            break;
+        case SDL_QUIT:
+            exit(0);
+        }
         if (currentScreen)
         {
             currentScreen->input(msg);
         }
-        if(msg.message==WM_KEYUP&&msg.vkcode==VK_ESCAPE)
-        {
-            exit(0);
-        }
-        else if (msg.message==WM_KEYUP&&msg.vkcode==VK_F1)
-        {
-            is_debug = !is_debug;
-        }
+        for(auto& box:boxes)box->input(msg);
     }
-    void update(int delta)
+    void update(float delta)
     {
         if (currentScreen)
         {
@@ -67,6 +76,7 @@ public:
         {
             currentScreen->draw(camera);
         }
+        for(auto& box : boxes)box->draw();
     }
 private:
     Screen* currentScreen=nullptr;

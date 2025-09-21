@@ -3,14 +3,13 @@
 #include "../StatusBar.h"
 
 extern IMAGE img_avatar_nut;
-extern Atlas atlas_nut_idle_left;
-extern Atlas atlas_nut_idle_right;
-extern Atlas atlas_nut_run_left;
-extern Atlas atlas_nut_run_right;
-extern Atlas atlas_nut_attack_ex_left;
-extern Atlas atlas_nut_attack_ex_right;
-extern Atlas atlas_nut_die_left;
-extern Atlas atlas_nut_die_right;
+extern Atlas atlas_nut_idle;
+extern Atlas atlas_nut_run;
+extern Atlas atlas_nut_attack_ex;
+extern Atlas atlas_nut_die;
+
+extern Audio nut_explode;
+extern Audio nut_dash;
 
 class Nut:public Player
 {
@@ -18,44 +17,27 @@ public:
     Nut(bool facing_right=true):Player(facing_right),
         dash_distance(Config::getInstance()->getInt("player.nut.dash_distance"))
     {
-        animation_idle_left.setAtlas(&atlas_nut_idle_left);
-        animation_idle_right.setAtlas(&atlas_nut_idle_right);
-        animation_run_left.setAtlas(&atlas_nut_run_left);
-        animation_run_right.setAtlas(&atlas_nut_run_right);
-        animation_attack_ex_left.setAtlas(&atlas_nut_attack_ex_left);
-        animation_attack_ex_right.setAtlas(&atlas_nut_attack_ex_right);
-        animation_die_left.setAtlas(&atlas_nut_die_left);
-        animation_die_right.setAtlas(&atlas_nut_die_right);
+        animation_idle.setAtlas(&atlas_nut_idle);
+        animation_run.setAtlas(&atlas_nut_run);
+        animation_attack_ex.setAtlas(&atlas_nut_attack_ex);
+        animation_die.setAtlas(&atlas_nut_die);
 
-        animation_idle_left.setInterval(75);
-        animation_idle_right.setInterval(75);
-        animation_run_left.setInterval(75);
-        animation_run_right.setInterval(75);
-        animation_attack_ex_left.setInterval(100);
-        animation_attack_ex_right.setInterval(100);
-        animation_die_left.setInterval(150);
-        animation_die_right.setInterval(150);
+        animation_idle.setInterval(75);
+        animation_run.setInterval(75);
+        animation_attack_ex.setInterval(100);
+        animation_die.setInterval(150);
 
-        animation_idle_left.setLoop(true);
-        animation_idle_right.setLoop(true);
-        animation_run_left.setLoop(true);
-        animation_run_right.setLoop(true);
-        animation_attack_ex_left.setLoop(false);
-        animation_attack_ex_right.setLoop(false);
-        animation_die_left.setLoop(false);
-        animation_die_right.setLoop(false);
+        animation_idle.setLoop(true);
+        animation_run.setLoop(true);
+        animation_attack_ex.setLoop(false);
+        animation_die.setLoop(false);
 
-        animation_attack_ex_left.setCallback([&](){
+        animation_attack_ex.setCallback([&](){
             SummonBoom();
             is_attacking_ex=false;
         });
 
-        animation_attack_ex_right.setCallback([&](){
-            SummonBoom();
-            is_attacking_ex=false;
-        });
-
-        statusBar->setAvatar(&img_avatar_nut);
+        statusBar->setAvatar(img_avatar_nut);
         attack_cd=Config::getInstance()->getInt("player.nut.attack_cd");
         attackEx_mp_reward=Config::getInstance()->getInt("player.nut.attackEx.mp_reward");
         Ex_damage=Config::getInstance()->getInt("player.nut.Exdamage");
@@ -63,17 +45,17 @@ public:
     }
     ~Nut()=default;
     void attack()override{
-        mciSendString(L"play nut_dash from 0", NULL, 0, NULL);
+        nut_dash.play();
         if(is_facing_right)
             position.x+=dash_distance;
         else
             position.x-=dash_distance;
     }
     void attackEx()override{
-        mciSendString(L"play nut_explode from 0", NULL, 0, NULL);
+        nut_explode.play();
         is_attacking_ex=true;
     }
-    void update(int delta)override{
+    void update(float delta)override{
         Player::update(delta);
         if(hp<max_hp)hp+=delta/100.0f;
         if(hp>max_hp)hp=max_hp;
