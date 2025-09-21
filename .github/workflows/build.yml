@@ -46,12 +46,12 @@ jobs:
             arch: x86-gcc
             c_compiler: clang
             cpp_compiler: clang++
-            vcpkg_triplet: x86-linux-release
+            vcpkg_triplet: x86-linux
           - os: ubuntu-latest
             arch: x86-clang
             c_compiler: clang
             cpp_compiler: clang++
-            vcpkg_triplet: x86-linux-release
+            vcpkg_triplet: x86-linux
           - os: macos-latest-large
             arch: x64
             c_compiler: clang
@@ -84,6 +84,10 @@ jobs:
           restore-keys: |
             vcpkg-${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('**/vcpkg.json') }}
 
+      - name: install Ninja
+        if: runner.os == 'Windows'
+        run: |
+          choco install ninja --yes
       - name:  Configure CMake
         shell: bash
         run: |
