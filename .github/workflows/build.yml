@@ -151,6 +151,7 @@ jobs:
           choco install ninja --yes
 
       - name: Update vcpkg
+        if: runner.os != 'Windows'
         run: sudo git -C /usr/local/share/vcpkg fetch --all --tags
 
       - name:  Configure CMake
