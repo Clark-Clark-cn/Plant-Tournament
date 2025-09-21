@@ -269,6 +269,7 @@ jobs:
           cd ${{ github.workspace }}/temp-web
           ls -la
           zip -r ~/PlantTournament_web.zip *
+          mv PlantTournament.html index.html
       - name: Upload Web Artifacts
         uses: actions/upload-artifact@v4
         with:
