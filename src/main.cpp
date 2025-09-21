@@ -1,4 +1,3 @@
-#define SDL_MAIN_HANDLED
 #include <mutex>
 
 #pragma comment(lib, "Winmm.lib")
