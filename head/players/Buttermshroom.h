@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Player.h"
-#include "../bullets/Bubble.h"
-#include "../bullets/Butter.h"
-#include "../bullets/CopCannon.h"
+#include "bullets/Bubble.h"
+#include "bullets/Butter.h"
+#include "bullets/CopCannon.h"
 
 extern IMAGE img_avatar_buttermshroom;
 extern Atlas atlas_buttermshroom_idle;

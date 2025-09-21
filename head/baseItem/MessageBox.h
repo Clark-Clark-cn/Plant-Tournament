@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Font.h"
 #include "Button.h"
+#include <memory>
 
 extern Camera camera;
 extern Font font_main;

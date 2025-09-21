@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Bullet.h"
-#include "../players/Player.h"
+#include "players/Player.h"
 
 extern IMAGE img_cop_cannon;
 extern Atlas atlas_nut_explode;

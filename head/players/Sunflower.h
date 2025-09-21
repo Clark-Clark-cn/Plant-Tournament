@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Player.h"
-#include "../bullets/sunBullet.h"
-#include "../bullets/sunBulletEx.h"
-#include "../StatusBar.h"
+#include "bullets/sunBullet.h"
+#include "bullets/sunBulletEx.h"
+#include "StatusBar.h"
 
 extern Atlas atlas_sunflower_idle;
 extern Atlas atlas_sunflower_run;

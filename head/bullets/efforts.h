@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Bullet.h"
-#include "../players/Player.h"
+#include "players/Player.h"
 
 extern Atlas atlas_buff_box_blue;
 extern Atlas atlas_buff_box_pink;

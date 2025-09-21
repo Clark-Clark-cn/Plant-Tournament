@@ -1,6 +1,6 @@
 #include "Player.h"
-#include "../bullets/NutExplode.h"
-#include "../StatusBar.h"
+#include "bullets/NutExplode.h"
+#include "StatusBar.h"
 
 extern IMAGE img_avatar_nut;
 extern Atlas atlas_nut_idle;

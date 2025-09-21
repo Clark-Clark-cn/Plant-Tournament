@@ -1,7 +1,7 @@
 #include "Player.h"
-#include "../bullets/Bubble.h"
-#include "../bullets/BubbleEx.h"
-#include "../StatusBar.h"
+#include "bullets/Bubble.h"
+#include "bullets/BubbleEx.h"
+#include "StatusBar.h"
 
 extern IMAGE img_avatar_gloomshroom;
 extern Atlas atlas_gloomshroom_idle;
