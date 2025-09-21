@@ -220,10 +220,6 @@ jobs:
   
   build-web:
     runs-on: ubuntu-latest
-    premissions:
-      contents: read
-      pages: write
-      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deploy-to-github-pages.outputs.page_url }}
