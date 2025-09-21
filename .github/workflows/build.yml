@@ -42,11 +42,6 @@ jobs:
             c_compiler: clang
             cpp_compiler: clang++
             vcpkg_triplet: x64-linux-release
-          - os: ubuntu-24.04-arm
-            arch: arm64
-            c_compiler: gcc
-            cpp_compiler: g++
-            vcpkg_triplet: arm64-linux-release
           - os: macos-13
             arch: x64
             c_compiler: clang
@@ -154,8 +149,8 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           choco install ninja --yes
+
       - name: Update vcpkg
-        if: runner.os == 'Linux'
         run: sudo git -C /usr/local/share/vcpkg fetch --all --tags
 
       - name:  Configure CMake
