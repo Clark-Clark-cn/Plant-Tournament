@@ -217,3 +217,91 @@ jobs:
           tag_name: action_${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+  build-web:
+    runs-on: ubuntu-latest
+    premissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy-to-github-pages.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/emsdk
+          key: emscripten-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            emscripten-${{ hashFiles('**/CMakeLists.txt') }}
+      - name: Setup emsdk
+        run: |
+          if [ ! -d "${{ github.workspace }}/emsdk" ]; then
+            git clone https://github.com/emscripten-core/emsdk.git "${{ github.workspace }}/emsdk"
+          fi
+          cd "${{ github.workspace }}/emsdk"
+          git pull
+          ./emsdk install latest
+          ./emsdk activate latest
+          source ./emsdk_env.sh
+      - name: Configure CMake for Web
+        run: |
+          source "${{ github.workspace }}/emsdk/emsdk_env.sh"
+          cmake -B build-web -S . \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake \
+            -DVCPKG_TARGET_TRIPLET=wasm32-emscripten-release \
+            -G Ninja
+      - name: Build for Web
+        run: |
+          source "${{ github.workspace }}/emsdk/emsdk_env.sh"
+          cmake --build build-web --config Release --parallel 4
+      - name: Pack Web
+        run: |
+          mkdir -p ${{ github.workspace }}/temp-web
+          cp -r build-web/bin/* ${{ github.workspace }}/temp-web
+          cd ${{ github.workspace }}/temp-web
+          ls -la
+          zip -r ~/PlantTournament_web.zip *
+      - name: Upload Web Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: PlantTournament_web
+          path: ~/PlantTournament_web.zip
+          retention-days: 30
+      - name: prepare-web-release
+        run: |
+          cp ~/PlantTournament_web.zip "${{ github.workspace }}/PlantTournament_web.zip" || true
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2.0.8
+        with:
+          files: |
+            ${{ github.workspace }}/PlantTournament_web.zip
+          prerelease: true
+          make_latest: false
+          name: "Release action ${{ github.ref_name }}"
+          body: |
+            This is a pre-release form github actions.
+            - commit: ${{ github.sha }}
+            - author: ${{ github.actor }}
+            - changes: ${{ github.event.head_commit.message }}
+          tag_name: action_${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Deploy to GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ github.workspace }}/temp-web
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
