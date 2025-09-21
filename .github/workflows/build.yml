@@ -42,12 +42,12 @@ jobs:
             c_compiler: clang
             cpp_compiler: clang++
             vcpkg_triplet: x64-linux-release
-          - os: ubuntu-latest
-            arch: x86-clang
-            c_compiler: clang
-            cpp_compiler: clang++
-            vcpkg_triplet: x86-linux
-          - os: macos-latest-large
+          - os: ubuntu-24.04-arm
+            arch: arm64
+            c_compiler: gcc
+            cpp_compiler: g++
+            vcpkg_triplet: arm64-linux-release
+          - os: macos-13
             arch: x64
             c_compiler: clang
             cpp_compiler: clang++
