@@ -2,7 +2,7 @@
 
 #include "Player.h"
 #include "bullets/sunBullet.h"
-#include "bullets/sunBulletEx.h"
+#include "bullets/sunBulletEX.h"
 #include "StatusBar.h"
 
 extern Atlas atlas_sunflower_idle;
