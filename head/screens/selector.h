@@ -5,7 +5,7 @@
 #include "players/Peashooter.h"
 #include "players/Sunflower.h"
 #include "players/Gloomshroom.h"
-#include "players/buttermshroom.h"
+#include "players/Buttermshroom.h"
 #include "players/Nut.h"
 #include "baseItem/Animation.h"
 
