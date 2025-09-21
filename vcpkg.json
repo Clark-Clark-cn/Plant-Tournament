@@ -1,6 +1,7 @@
 {
   "dependencies": [
     "nlohmann-json",
+    "sdl2",
     "sdl2-image",
     {
       "name": "sdl2-mixer",

@@ -1,0 +1,149 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            arch: x64
+            c_compiler: cl
+            cpp_compiler: cl
+            vcpkg_triplet: x64-windows-static-release
+          - os: windows-latest
+            arch: arm64
+            c_compiler: cl
+            cpp_compiler: cl
+            vcpkg_triplet: arm64-windows-static-release
+          - os: windows-latest
+            arch: x86
+            c_compiler: cl
+            cpp_compiler: cl
+            vcpkg_triplet: x86-windows-static
+          - os: ubuntu-latest
+            arch: x64-gcc
+            c_compiler: gcc
+            cpp_compiler: g++
+            vcpkg_triplet: x64-linux-release
+          - os: ubuntu-latest
+            arch: x64
+            c_compiler: clang
+            cpp_compiler: clang++
+            vcpkg_triplet: x64-linux-release
+          - os: ubuntu-latest
+            arch: x86-gcc
+            c_compiler: clang
+            cpp_compiler: clang++
+            vcpkg_triplet: x86-linux-release
+          - os: ubuntu-latest
+            arch: x86-clang
+            c_compiler: clang
+            cpp_compiler: clang++
+            vcpkg_triplet: x86-linux-release
+          - os: macos-latest-large
+            arch: x64
+            c_compiler: clang
+            cpp_compiler: clang++
+            vcpkg_triplet: x64-osx-release
+          - os: macos-latest
+            arch: arm64
+            c_compiler: clang
+            cpp_compiler: clang++
+            vcpkg_triplet: arm64-osx-release
+    env:
+      VCPKG_TARGET_TRIPLET: ${{ matrix.vcpkg_triplet }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: setup MSVC
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/build/vcpkg_installed
+          key: ${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('**/vcpkg.json') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('**/vcpkg.json') }}
+
+      - name:  Configure CMake
+        shell: bash
+        run: |
+          cmake -B build -S . \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
+            -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+            -DVCPKG_TARGET_TRIPLET=${{ env.VCPKG_TARGET_TRIPLET }} \
+            -G Ninja
+
+      - name: Build
+        shell: bash
+        run: |
+          cmake --build build --config Release --parallel 4
+
+      - name:  pack
+        shell: bash
+        run: |
+          mkdir -p ${{ github.workspace }}/temp
+          cp -r build/bin* ${{ github.workspace }}/temp
+          cd ${{ github.workspace }}/temp
+          ls -la
+          tar -czvf ~/PlantTournament_${{ matrix.arch }}_${{ matrix.os }}.tar.gz *
+          if command -v zip > /dev/null; then
+            zip -r ~/PlantTournament_${{ matrix.arch }}_${{ matrix.os }}.zip *
+          elif command -v 7z > /dev/null; then
+            7z a ~/PlantTournament_${{ matrix.arch }}_${{ matrix.os }}.zip *
+          else
+            powershell -Command "Compress-Archive -Path * -DestinationPath ~/PlantTournament_${{ matrix.arch }}_${{ matrix.os }}.zip"
+          fi
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: PlantTournament_${{ matrix.arch }}_${{ matrix.os }}
+          path: |
+            ~/PlantTournament_${{ matrix.arch }}_${{ matrix.os }}.tar.gz
+            ~/PlantTournament_${{ matrix.arch }}_${{ matrix.os }}.zip
+          retention-days: 30
+
+      - name: prepare-release
+        run: |
+          cp ~/PlantTournament_${{ matrix.arch }}_${{ matrix.os }}.tar.gz "${{ github.workspace }}/PlantTournament_${{ matrix.arch }}_${{ matrix.os }}.tar.gz" || true
+          cp ~/PlantTournament_${{ matrix.arch }}_${{ matrix.os }}.zip "${{ github.workspace }}/PlantTournament_${{ matrix.arch }}_${{ matrix.os }}.zip" || true
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2.0.8
+        with:
+          files: |
+            ${{ github.workspace }}/PlantTournament_${{ matrix.arch }}_${{ matrix.os }}.tar.gz
+            ${{ github.workspace }}/PlantTournament_${{ matrix.arch }}_${{ matrix.os }}.zip
+          prerelease: true
+          make_latest: false
+          name: "Release action ${{ github.ref_name }}"
+          body: |
+            This is a pre-release form github actions.
+            - commit: ${{ github.sha }}
+            - author: ${{ github.actor }}
+            - changes: ${{ github.event.head_commit.message }}
+          tag_name: action_${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

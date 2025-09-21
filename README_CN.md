@@ -53,16 +53,20 @@
 
 ## 构建和运行
 
-1. 准备工作：安装visual studio和EasyX大暑版，下载当前代码
-2. 用Visual Studio 打开项目中的sln文件
-3. 配置好vcpkg并使用它安装nlohmann json
+1. 准备工作：安装CMake下载当前代码
+2. 用Visual Studio code打开项目文件夹
+3. 配置好vcpkg并使用它安装依赖项
 4. 选择配置，**编译**并**运行**！
 
 ## 依赖项
 
 1. nlohmann json
-2. EasyX
+2. SDL2
+3. SDL2_image
+4. SDL2_ttf
+5. SDL2_mixer
 
 ## AI使用情况
 
 几乎没有使用AI，部分代码使用了AI自动补全，没有使用过AI聊天功能询问有关代码的问题，README翻译和git commit 消息使用AI生成
+使用AI生成部分CMake配置

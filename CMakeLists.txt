@@ -14,7 +14,7 @@ if(NOT EMSCRIPTEN)
     if(DEFINED ENV{VCPKG_TARGET_TRIPLET})
         set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_TARGET_TRIPLET}"
             CACHE STRING "Vcpkg target triplet")
-    else()
+    elseif(NOT DEFINED VCPKG_TARGET_TRIPLET)
         set(VCPKG_TARGET_TRIPLET "x64-windows"
             CACHE STRING "Vcpkg target triplet")
     endif()
@@ -108,12 +108,6 @@ if(WIN32)
      $<$<CONFIG:Release>:/SUBSYSTEM:WINDOWS>
      $<$<CONFIG:Debug>:/SUBSYSTEM:CONSOLE>
      $<$<CONFIG:Debug>:/ENTRY:mainCRTStartup>
-    )
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_CURRENT_SOURCE_DIR}/icon.ico"
-            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/icon.ico"
-        COMMENT "Copying icon.ico to output directory"
     )
     target_compile_options(${PROJECT_NAME} PRIVATE /utf-8)
 endif()
