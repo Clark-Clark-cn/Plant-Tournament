@@ -204,9 +204,13 @@ int main(int argc, char* argv[])
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, Config::getInstance()->getString("window.scale_quality").c_str());
 #endif
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
-
+#ifndef __EMSCRIPTEN__
     window = SDL_CreateWindow("PlantTournament", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
         1280, 720, SDL_WINDOW_SHOWN|SDL_WINDOW_RESIZABLE);
+#else
+    window = SDL_CreateWindow("PlantTournament", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+        1280, 720, SDL_WINDOW_SHOWN);
+#endif
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 #ifndef __EMSCRIPTEN__
     SDL_RenderSetLogicalSize(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
