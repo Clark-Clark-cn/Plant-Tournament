@@ -208,8 +208,10 @@ int main(int argc, char* argv[])
     window = SDL_CreateWindow("PlantTournament", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
         1280, 720, SDL_WINDOW_SHOWN|SDL_WINDOW_RESIZABLE);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+#ifndef __EMSCRIPTEN__
     SDL_RenderSetLogicalSize(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
     SDL_RenderSetIntegerScale(renderer, SDL_FALSE);
+#endif
     
     camera.setRenderer(renderer);
     load_game_resources(renderer);
