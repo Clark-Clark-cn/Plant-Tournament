@@ -393,6 +393,7 @@ void Config::addDefaultPlatforms(const std::vector<Platform>& value){
 void Config::setDefaultConfig(){
     if(is_default)return;
     setifno("window.fps",60);
+    setifno("window.scale_quality","linear");
     setifno("player.size",Vector2(96,96));
     setifno("player.gravity",1.6e-3f);
     setifno("player.run_velocity",0.55f);
