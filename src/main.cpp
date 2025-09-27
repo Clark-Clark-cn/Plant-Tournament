@@ -200,9 +200,9 @@ int main(int argc, char* argv[])
     IMG_Init(IMG_INIT_PNG|IMG_INIT_JPG);
     Mix_Init(MIX_INIT_MP3|MIX_INIT_OGG);
     TTF_Init();
-
+#ifndef __EMSCRIPTEN__
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, Config::getInstance()->getString("window.scale_quality").c_str());
-
+#endif
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 
     window = SDL_CreateWindow("PlantTournament", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
